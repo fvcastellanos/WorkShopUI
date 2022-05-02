@@ -1,0 +1,100 @@
+﻿@* <div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">WorkShopUI</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+} *@
+
+@* <AuthorizeView> *@
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">WorkShop</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+              Inicio
+          </NavLink>          
+        </li>
+        <li class="nav-item dropdown">
+          <NavLink class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Catálogos</NavLink>
+          <div class="dropdown-menu">
+            <NavLink class="dropdown-item" href="car-brands">Marcas de Vehículos</NavLink>      
+            @* <NavLink class="dropdown-item" href="operation-types">Tipos de Operación</NavLink>          
+            <NavLink class="dropdown-item" href="products">Productos</NavLink>          
+            <NavLink class="dropdown-item" href="providers">Proveedores</NavLink>       *@
+
+            @* <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a> *@
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <NavLink class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Movimientos</NavLink>
+          <div class="dropdown-menu">
+            <NavLink class="dropdown-item" href="provider-invoices">Facturas de Proveedores</NavLink>      
+            @* <NavLink class="dropdown-item" href="operation-types">Tipos de Operación</NavLink>          
+            <NavLink class="dropdown-item" href="products">Productos</NavLink>          
+            <NavLink class="dropdown-item" href="providers">Proveedores</NavLink>       *@
+          </div>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="about">About</NavLink>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle user-wrapper" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                @* @context.User.Identity.Name *@
+              </a>
+              <div class="dropdown-menu" style="right: 0; left: unset;">
+                  <NavLink class="nav-link" href="/login?logout">
+                    <span class="sr-only"></span>
+                    Cerrar sesión
+                  </NavLink>
+              </div>
+          </li>
+      </ul>           
+    </div>
+  </nav>
+
+@* </AuthorizeView> *@
+
