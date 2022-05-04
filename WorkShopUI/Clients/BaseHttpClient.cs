@@ -15,9 +15,7 @@ namespace WorkShopUI.Clients
 
         public BaseHttpClient(IHttpClientFactory httpClientFactory)
         {
-            // HttpClient = httpClientFactory.CreateClient("workshop-api");
-            HttpClient = httpClientFactory.CreateClient();
-            HttpClient.BaseAddress = new Uri("http://localhost:8080/v1/workshop");
+            HttpClient = httpClientFactory.CreateClient(ClientConstants.ClientName);
 
             JsonSerializerOptions = new JsonSerializerOptions
             {

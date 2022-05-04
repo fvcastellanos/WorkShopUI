@@ -1,6 +1,7 @@
 using System.Linq;
 using LanguageExt;
 using WorkShopUI.Clients;
+using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 
 namespace WorkShopUI.Services
@@ -17,29 +18,45 @@ namespace WorkShopUI.Services
             _carBrandClient = carBrandClient;
         }
 
-        public Either<string, IEnumerable<CarBrandView>> Search(SearchView searchView)
+        public Either<string, PagedView<CarBrandView>> Search(SearchView searchView)
         {
             try
             {
                 var searchResult = _carBrandClient.Search(searchView.Active, searchView.Name, searchView.Page, searchView.Size);
 
-                return searchResult.Content
-                    .Select(carBrand => {
+                return new PagedView<CarBrandView>
+                {
+                    Pageable = buildPageable(searchResult),
+                    Content = searchResult.Content
+                                .Select(carBrand => {
 
-                        return new CarBrandView
-                        {
-                            Name = carBrand.Name,
-                            Description = carBrand.description,
-                            Active = "ACTIVE".Equals(carBrand.Active) ? 1 : 0
-                        };
-                    }).ToList();
-
+                                    return new CarBrandView
+                                    {
+                                        Name = carBrand.Name,
+                                        Description = carBrand.description,
+                                        Active = carBrand.Active
+                                    };
+                                }).ToList()
+                };
             }
             catch (Exception exception)
             {
                 _logger.LogError("can't get product list - {0}", exception.Message);
                 return "No se pueden obtener las marcas de vehiculos";                
             }
+        }
+
+        private PageableView buildPageable(SearchResponse<CarBrand> searchResponse) {
+
+            return new PageableView
+            {
+                    First = searchResponse.First,
+                    Last = searchResponse.Last,
+                    TotalPages = searchResponse.TotalPages,
+                    TotalElements = searchResponse.TotalElements,
+                    PageNumber = searchResponse.Number,
+                    PageSize = searchResponse.Size,                
+            };
         }
 
     }

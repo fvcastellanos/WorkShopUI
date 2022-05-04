@@ -51,6 +51,8 @@ namespace WorkShopUI.Pages
         protected abstract void Update();
         protected abstract void Add();
 
+        protected abstract void Search();
+
         protected void SaveChanges()
         {
             if (!EditContext.Validate())

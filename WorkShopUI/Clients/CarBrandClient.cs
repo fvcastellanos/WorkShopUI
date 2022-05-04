@@ -6,16 +6,13 @@ namespace WorkShopUI.Clients
 
     public class CarBrandClient : BaseHttpClient
     {
-
-        private const string ResourcePath = "/v1/workshop/car-brands";
-
         public CarBrandClient(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
         }
 
         public SearchResponse<CarBrand> Search(int active, string name, int page, int size)
         {
-            var url = $"{ResourcePath}?active={active}&name={name}&page={page}&size={size}";
+            var url = $"{ClientConstants.CarBrandResource}?active={active}&name={name}&page={page}&size={size}";
             
             using (var response = HttpClient.GetAsync(url).Result)
             {
@@ -23,6 +20,8 @@ namespace WorkShopUI.Clients
                 {
                     var responsePayload = response.Content.ReadAsStringAsync()
                         .Result;
+
+                    System.Console.WriteLine(responsePayload);
 
                     return JsonDeserialize<SearchResponse<CarBrand>>(responsePayload);
                 }

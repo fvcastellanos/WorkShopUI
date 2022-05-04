@@ -1,4 +1,4 @@
-if (Value.Equals(1))
+@if (Value.Equals("ACTIVE"))
 {
     <span>Si</span>
 }
@@ -8,6 +8,7 @@ else
 }
 
 @code {
+
     [Parameter]
-    public int Value { get; set; }
+    public string Value { get; set; } = "";
 }

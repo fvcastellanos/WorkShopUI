@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Steeltoe.Extensions.Configuration.Placeholder;
 using WorkShopUI.Clients;
 using WorkShopUI.Data;
 using WorkShopUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddPlaceholderResolver();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -12,17 +17,10 @@ builder.Logging.AddConsole();
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddHttpClient("workshop-api", config => {
+builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
 
-    config.BaseAddress = new Uri("http://localhost:8080/v1/workshop"); // need to use an environment variable
-
-    var contentType = "Content-Type";
-    if (config.DefaultRequestHeaders.Contains(contentType))
-    {
-        config.DefaultRequestHeaders.Remove(contentType);
-    }            
-
-    config.DefaultRequestHeaders.Add(contentType, "application/json");
+    var apiUrl = builder.Configuration["WorkShopAPI:BaseURL"];
+    config.BaseAddress = new Uri(apiUrl); // need to use an environment variable
 
 });
 

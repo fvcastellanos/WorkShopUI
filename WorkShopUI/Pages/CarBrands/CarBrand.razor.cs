@@ -9,6 +9,8 @@ namespace WorkShopUI.Pages
     {
         [Inject]
         protected CarBrandService Service { get; set; }
+
+        protected PagedView<CarBrandView> SearchResponse;
         protected IEnumerable<CarBrandView> CarBrands;
         protected SearchView SearchView;
 
@@ -16,8 +18,8 @@ namespace WorkShopUI.Pages
         {
             SearchView = new SearchView
             {
-                Page = 1,
-                Size = 20,
+                Page = 0,
+                Size = 25,
                 Active = 1,
                 Name = ""
             };
@@ -26,15 +28,25 @@ namespace WorkShopUI.Pages
             Search();
         }
 
-        protected void Search()
+        protected override void Search()
         {
             CarBrands = new List<CarBrandView>();
             HideErrorMessage();
 
             var result = Service.Search(SearchView);
-            result.Match(right => CarBrands = right, ShowErrorMessage); 
-        }
+            result.Match(right => {
 
+                SearchResponse = right;
+                CarBrands = right.Content;
+
+            }, ShowErrorMessage); 
+        }
+        
+        protected void DisplayPage(int pageNumber)
+        {
+            SearchView.Page = pageNumber - 1;
+            Search();
+        }
         protected void ShowAddModal()
         {
 

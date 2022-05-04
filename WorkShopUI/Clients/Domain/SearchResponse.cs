@@ -9,7 +9,7 @@ namespace WorkShopUI.Clients.Domain
         public int Size { get; set; }
         public int Number { get; set; }
         public int NumberOfElements { get; set; }
-        public bool first { get; set; }
+        public bool First { get; set; }
         public bool Empty { get; set; }
 
         public Pageable Pageable { get; set; }        
