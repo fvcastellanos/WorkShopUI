@@ -3,6 +3,7 @@ using LanguageExt;
 using WorkShopUI.Clients;
 using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
+using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services
 {
@@ -26,17 +27,10 @@ namespace WorkShopUI.Services
 
                 return new PagedView<CarBrandView>
                 {
-                    Pageable = buildPageable(searchResult),
+                    Pageable = CarBrandTransformer.BuildPageable(searchResult),
                     Content = searchResult.Content
-                                .Select(carBrand => {
-
-                                    return new CarBrandView
-                                    {
-                                        Name = carBrand.Name,
-                                        Description = carBrand.description,
-                                        Active = carBrand.Active
-                                    };
-                                }).ToList()
+                                .Select(CarBrandTransformer.ToView)
+                                .ToList()
                 };
             }
             catch (Exception exception)
@@ -46,18 +40,19 @@ namespace WorkShopUI.Services
             }
         }
 
-        private PageableView buildPageable(SearchResponse<CarBrand> searchResponse) {
-
-            return new PageableView
+        public Either<string, CarBrandView> Add(CarBrandView carBrandView)
+        {
+            try
             {
-                    First = searchResponse.First,
-                    Last = searchResponse.Last,
-                    TotalPages = searchResponse.TotalPages,
-                    TotalElements = searchResponse.TotalElements,
-                    PageNumber = searchResponse.Number,
-                    PageSize = searchResponse.Size,                
-            };
+                var foo = CarBrandTransformer.ToModel(carBrandView);
+                var carBrand = _carBrandClient.Add(foo);
+                return CarBrandTransformer.ToView(carBrand);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError("can't create new car brand with name={0} - {1}", carBrandView.Name, exception.Message);
+                return $"No es posible agregar el fabricante: {carBrandView.Name}";
+            }
         }
-
     }
 }

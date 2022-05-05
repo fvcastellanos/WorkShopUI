@@ -88,7 +88,7 @@ namespace WorkShopUI.Clients
 
         protected void Add(string token, string url, StringContent content, string errorMessage)
         {
-            AddAuthenticationHeader(token);
+            // AddAuthenticationHeader(token);
 
             using (var response = HttpClient.PostAsync(url, content).Result)
             {

@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain;
 using WorkShopUI.Services;
 
@@ -11,8 +12,9 @@ namespace WorkShopUI.Pages
         protected CarBrandService Service { get; set; }
 
         protected PagedView<CarBrandView> SearchResponse;
-        protected IEnumerable<CarBrandView> CarBrands;
         protected SearchView SearchView;
+        protected IEnumerable<CarBrandView> CarBrands;
+        protected CarBrandView CarBrandView;
 
         protected override void OnInitialized()
         {
@@ -44,17 +46,27 @@ namespace WorkShopUI.Pages
         
         protected void DisplayPage(int pageNumber)
         {
+            // System.Console.WriteLine(pageNumber - 1);
             SearchView.Page = pageNumber - 1;
             Search();
         }
         protected void ShowAddModal()
         {
+            CarBrandView = new CarBrandView()
+            {
+                Active = "Yes"
+            };
 
+            EditContext = new EditContext(CarBrandView);
+            ModifyModal = false;
+
+            HideModalError();
+            ShowModal();
         }
 
-        protected void AddBrand()
+        protected void GetBrand(string id)
         {
-
+            System.Console.WriteLine(id);
         }
 
         protected override void Update()
@@ -64,7 +76,13 @@ namespace WorkShopUI.Pages
 
         protected override void Add()
         {
-            throw new NotImplementedException();
+            var result = Service.Add(CarBrandView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+            }, DisplayModalError);
         }
     }
 }

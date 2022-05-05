@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
-                            <input type="button" class="btn btn-primary" value="Agregar Marca" @onclick="ShowAddModal" />
+                            <input type="button" class="btn btn-primary" value="Agregar Fabricante" @onclick="ShowAddModal" />
                         </fieldset>
                     </div>
                 </div>
@@ -56,51 +56,7 @@
             
             <div class="top-separator">
 
-                @* <div class="paginator">
-                    <nav aria-label="Page navigation example">
-                    <ul class="pagination">
-                        <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        </li>
-
-                        @for (int pageNumber = 0; pageNumber < SearchResponse.TotalPages; pageNumber++)
-                        {
-                            int displayNumber = pageNumber + 1;
-                            
-                            if (pageNumber.Equals(SearchResponse.PageNumber))
-                            {
-                                <li class="page-item active">
-                                    <span class="page-link">
-                                        @displayNumber
-                                        <span class="sr-only">(current)</span>
-                                    </span>
-                                </li>
-                            }
-                            else 
-                            {
-                                <li class="page-item">
-                                    <a class="page-link" href="" @onclick="() => DisplayPage(pageNumber)" @onclick:preventDefault>@displayNumber</a>
-                                </li>                            
-                            }
-                        }
-
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        </li>
-                    </ul>
-                    </nav>
-                </div> *@
-
-                <Paginator PageableView="@SearchResponse.Pageable" SelectedPageFunction="DisplayPage" />
+                <Paginator PageableView="@SearchResponse.Pageable" SelectedPageFunction="@DisplayPage" CurrentPage="@SearchView.Page" />
 
                 <table class="table table-striped">
                     <thead>
@@ -113,9 +69,9 @@
                         {
                             <tr>
                                 <td>
-                                    @* <div @onclick="() => GetProduct(brand.Id)" class="crud-icon"> 
+                                    <div @onclick="() => GetBrand(brand.Id)" class="crud-icon"> 
                                         <span class="oi oi-brush" aria-hidden="true"></span>
-                                    </div> *@
+                                    </div>
                                 </td>
                                 <td>@brand.Name</td>
                                 <td><BooleanField Value="@brand.Active"/></td>
@@ -133,11 +89,11 @@
                             <div class="modal-header">
                                 @if (ModifyModal)
                                 {
-                                    <h5 class="modal-title">Actualizar Producto</h5>
+                                    <h5 class="modal-title">Actualizar Fabricante</h5>
                                 }
                                 else
                                 {
-                                    <h5 class="modal-title">Agregar Producto</h5>
+                                    <h5 class="modal-title">Agregar Fabricante</h5>
                                 }
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
                                     <span aria-hidden="true">&times;</span>
@@ -147,39 +103,31 @@
 
                                 <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
 
-                                @* <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
+                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
                                     <DataAnnotationsValidator/>
                                     <ValidationSummary/>
                                     <div class="form-group">
-                                        <label for="name">Código</label>
-                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ProductView.Code"/>
-                                    </div>
-                                    <div class="form-group">
                                         <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ProductView.Name"/>
+                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="CarBrandView.Name"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="ProductView.Description" row="4"></textarea>
+                                        <textarea class="form-control" id="description" @bind="CarBrandView.Description" row="4"></textarea>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="minimalAmount">Cantidad Mínima</label>
-                                        <input type="number" class="form-control" id="minimalAmount" @bind="ProductView.MinimalAmount"/>
-                                    </div>                                        
                                     @if (ModifyModal)
                                     {
                                         <label>Activo</label>
                                         <div class="form-group">
-                                            <select class="form-control" @bind="ProductView.Active">
-                                                <option value="0">No</option>
-                                                <option value="1">Si</option>
+                                            <select class="form-control" @bind="CarBrandView.Active">
+                                                <option value="No">No</option>
+                                                <option value="Yes">Si</option>
                                             </select>
                                         </div>
                                     }
 
                                     <input type="submit" class="btn btn-primary" value="Guardar" />
                                     <input type="button" class="btn btn-secondary" value="Cancelar" @onclick="HideAddModal"/>
-                                </EditForm> *@
+                                </EditForm>
                             </div>
                         </div>
                     </div>

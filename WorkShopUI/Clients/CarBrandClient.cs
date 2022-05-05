@@ -21,13 +21,29 @@ namespace WorkShopUI.Clients
                     var responsePayload = response.Content.ReadAsStringAsync()
                         .Result;
 
-                    System.Console.WriteLine(responsePayload);
-
                     return JsonDeserialize<SearchResponse<CarBrand>>(responsePayload);
                 }
             }
 
-            throw new HttpRequestException("Oh no!!!");             
+            throw new HttpRequestException("Unable to retrieve search results");             
+        }
+
+        public CarBrand Add(CarBrand carBrand) {
+
+            var content = CreateStringContent(carBrand);
+
+            using (var response = HttpClient.PostAsync(ClientConstants.CarBrandResource, content).Result)
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException("Unable to add Car Brand");
+                }
+
+                    var responsePayload = response.Content.ReadAsStringAsync()
+                        .Result;
+
+                return JsonDeserialize<CarBrand>(responsePayload);
+            }
         }
     }
 

@@ -28,7 +28,7 @@
         {
             int displayNumber = pageNumber + 1;
             
-            if (pageNumber.Equals(PageableView.PageNumber))
+            if (pageNumber.Equals(CurrentPage))
             {
                 <li class="page-item active">
                     <span class="page-link">
@@ -44,10 +44,6 @@
                 </li>                            
             }
         }
-
-        @* <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li> *@
 
         @if(PageableView.Last)
         {
@@ -79,4 +75,7 @@
 
     [Parameter]
     public Action<int> SelectedPageFunction { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; }
 }
