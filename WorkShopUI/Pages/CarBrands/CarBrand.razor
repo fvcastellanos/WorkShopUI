@@ -56,7 +56,7 @@
             
             <div class="top-separator">
 
-                <Paginator PageableView="@SearchResponse.Pageable" SelectedPageFunction="@DisplayPage" CurrentPage="@SearchView.Page" />
+                <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" />
 
                 <table class="table table-striped">
                     <thead>

@@ -46,9 +46,9 @@ namespace WorkShopUI.Pages
         
         protected void DisplayPage(int pageNumber)
         {
-            // System.Console.WriteLine(pageNumber - 1);
-            SearchView.Page = pageNumber - 1;
+            SearchView.Page = pageNumber;
             Search();
+            StateHasChanged();
         }
         protected void ShowAddModal()
         {

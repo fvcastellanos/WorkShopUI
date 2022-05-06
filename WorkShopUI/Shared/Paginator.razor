@@ -40,7 +40,9 @@
             else 
             {
                 <li class="page-item">
-                    <a class="page-link" href="" @onclick="() => SelectedPageFunction(pageNumber)" @onclick:preventDefault>@displayNumber</a>
+                    <a class="page-link" href=""  @onclick="(() => SetPage(displayNumber - 1))" @onclick:preventDefault>
+                        @displayNumber
+                    </a>
                 </li>                            
             }
         }
@@ -63,7 +65,6 @@
                 </a>
             </li>
         }
-
     </ul>
     </nav>
 </div>
@@ -74,8 +75,13 @@
     public PageableView PageableView { get; set; }
 
     [Parameter]
-    public Action<int> SelectedPageFunction { get; set; }
+    public int CurrentPage { get; set; }
 
     [Parameter]
-    public int CurrentPage { get; set; }
+    public Action<int> SetPageAction { get; set; }
+
+    void SetPage(int pageNumber)
+    {
+        SetPageAction(pageNumber);
+    }
 }
