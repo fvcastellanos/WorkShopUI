@@ -65,7 +65,7 @@ namespace WorkShopUI.Clients
 
         protected Option<T> FindById<T>(string token, string url, string errorMessage)
         {
-            AddAuthenticationHeader(token);
+            // AddAuthenticationHeader(token);
 
             using (var response = HttpClient.GetAsync(url).Result)
             {
@@ -101,7 +101,7 @@ namespace WorkShopUI.Clients
 
         protected void Update(string token, string url, StringContent content, string errorMessage)
         {
-            AddAuthenticationHeader(token);
+            // AddAuthenticationHeader(token);
 
             using (var response = HttpClient.PutAsync(url, content).Result)
             {

@@ -18,7 +18,26 @@ namespace WorkShopUI.Transformers
             };
         }
 
-        protected static string GetId(IEnumerable<Link> links)
+        protected static string GetId(ResourceObject resourceObject) {
+
+            return resourceObject.Links != null ? GetIdFromLinks(resourceObject.Links)
+                : GetIdFromSelfLink(resourceObject.SelfLink);
+        }
+
+        protected static string GetIdFromSelfLink(SelfLink selfLink)
+        {
+            if (selfLink.Self != null)
+            {
+                var self = selfLink.Self.Href;
+                var index = self.LastIndexOf("/");
+
+                return self.Substring(index + 1);
+            }
+
+            return "";
+        }
+
+        protected static string GetIdFromLinks(IEnumerable<Link> links)
         {
             if (links != null)
             {

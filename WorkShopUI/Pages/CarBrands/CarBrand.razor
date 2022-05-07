@@ -31,7 +31,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col">
+                                <div class="col-5">
                                     <div class="form-group">
                                         <label for="top">Filas</label>
                                         <select class="custom-select" id="top" @bind="SearchView.Size">
@@ -42,6 +42,8 @@
                                             <option value="500">500</option>
                                         </select>
                                     </div>                            
+                                </div>
+                                <div class="col">
                                 </div>
                             </div>
                             <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
@@ -74,7 +76,7 @@
                                     </div>
                                 </td>
                                 <td>@brand.Name</td>
-                                <td><BooleanField Value="@brand.Active"/></td>
+                                <td><ActiveField Value="@brand.Active"/></td>
                             </tr>
                         }
                     </tbody>
@@ -119,8 +121,8 @@
                                         <label>Activo</label>
                                         <div class="form-group">
                                             <select class="form-control" @bind="CarBrandView.Active">
-                                                <option value="No">No</option>
-                                                <option value="Yes">Si</option>
+                                                <option value="INACTIVE">No</option>
+                                                <option value="ACTIVE">Si</option>
                                             </select>
                                         </div>
                                     }

@@ -7,5 +7,8 @@ namespace WorkShopUI.Clients.Domain
         [JsonPropertyName("links")]
         public IEnumerable<Link> Links { get; set; }
 
+        [JsonPropertyName("_links")]
+        public SelfLink SelfLink { get; set; }
+
     }
 }

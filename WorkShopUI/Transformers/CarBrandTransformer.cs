@@ -11,7 +11,7 @@ namespace WorkShopUI.Transformers
             {
                 Name = carBrandView.Name,
                 Description = carBrandView.Description,
-                Active = carBrandView.Active.Equals("Yes") ? "ACTIVE" : "INACTIVE"
+                Active = carBrandView.Active
             };
         }
 
@@ -19,7 +19,7 @@ namespace WorkShopUI.Transformers
         {
             return new CarBrandView
             {
-                Id = GetId(carBrand.Links),
+                Id = GetId(carBrand),
                 Name = carBrand.Name,
                 Description = carBrand.Description,
                 Active = carBrand.Active

@@ -1,4 +1,5 @@
 
+using LanguageExt;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -44,6 +45,22 @@ namespace WorkShopUI.Clients
 
                 return JsonDeserialize<CarBrand>(responsePayload);
             }
+        }
+
+        public Option<CarBrand> FindById(string id)
+        {
+            var url = $"{ClientConstants.CarBrandResource}/{id}";
+
+            return FindById<CarBrand>("", url, $"Unable to find Car brand with id: {id}");
+        }
+
+        public void Update(string id, CarBrand carBrand)
+        {
+
+            var url = $"{ClientConstants.CarBrandResource}/{id}";
+            var content = CreateStringContent(carBrand);
+
+            Update("", url, content, $"Unable to update car brand with id: {id}");
         }
     }
 

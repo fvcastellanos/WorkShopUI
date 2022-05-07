@@ -54,7 +54,7 @@ namespace WorkShopUI.Pages
         {
             CarBrandView = new CarBrandView()
             {
-                Active = "Yes"
+                Active = "ACTIVE"
             };
 
             EditContext = new EditContext(CarBrandView);
@@ -66,12 +66,21 @@ namespace WorkShopUI.Pages
 
         protected void GetBrand(string id)
         {
-            System.Console.WriteLine(id);
+            var holder = Service.FindById(id);
+
+            holder.Match(ShowEditModal,
+                () => ShowErrorMessage($"No se encontro informacion del fabricante con id: {id}"));
         }
 
         protected override void Update()
         {
-            throw new NotImplementedException();
+            var result = Service.Update(CarBrandView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+            }, DisplayModalError);
         }
 
         protected override void Add()
@@ -83,6 +92,15 @@ namespace WorkShopUI.Pages
                 HideAddModal();
                 Search();
             }, DisplayModalError);
+        }
+
+        // ------------------------------------------------------------------------------------
+
+        private void ShowEditModal(CarBrandView view)
+        {
+            CarBrandView = view;
+            EditContext = new EditContext(CarBrandView);
+            ShowEditModal();
         }
     }
 }

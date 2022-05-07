@@ -4,6 +4,5 @@ namespace WorkShopUI.Clients.Domain
     {
         public string Rel { get; set; }
         public string Href { get; set; }
-        public string Type { get; set; }
     }
 }
