@@ -11,6 +11,9 @@ namespace WorkShopUI.Pages
         [Inject]
         protected CarBrandService Service { get; set; }
 
+        [Inject]
+        protected NavigationManager NavigationManager { get; set; }
+
         protected PagedView<CarBrandView> SearchResponse;
         protected SearchView SearchView;
         protected IEnumerable<CarBrandView> CarBrands;
@@ -28,6 +31,7 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
+
         }
 
         protected override void Search()
@@ -70,6 +74,11 @@ namespace WorkShopUI.Pages
 
             holder.Match(ShowEditModal,
                 () => ShowErrorMessage($"No se encontro informacion del fabricante con id: {id}"));
+        }
+
+        protected void GetLines(string id, string name)
+        {
+            NavigationManager.NavigateTo($"/car-brands/{id}/lines?CarBrandName={name}");
         }
 
         protected override void Update()

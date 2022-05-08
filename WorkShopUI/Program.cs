@@ -26,10 +26,12 @@ builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
 
 // HTTP Clients
 builder.Services.AddScoped<CarBrandClient>();
+builder.Services.AddScoped<CarLineClient>();
 
 // Services
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<CarBrandService>();
+builder.Services.AddScoped<CarLineService>();
 
 var app = builder.Build();
 

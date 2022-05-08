@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using LanguageExt;
+using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
 {
@@ -45,9 +46,9 @@ namespace WorkShopUI.Clients
             return new StringContent(payload, Encoding.UTF8, "application/json");
         }
 
-        protected IEnumerable<T> Find<T>(string token, string url, string errorMessage)
+        protected SearchResponse<T> Find<T>(string token, string url, string errorMessage)
         {
-            AddAuthenticationHeader(token);
+            // AddAuthenticationHeader(token);
 
             using (var response = HttpClient.GetAsync(url).Result)
             {
@@ -56,7 +57,7 @@ namespace WorkShopUI.Clients
                     var responsePayload = response.Content.ReadAsStringAsync()
                         .Result;
 
-                    return JsonDeserialize<List<T>>(responsePayload);
+                    return JsonDeserialize<SearchResponse<T>>(responsePayload);
                 }
             }
 

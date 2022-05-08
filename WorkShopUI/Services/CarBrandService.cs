@@ -1,7 +1,5 @@
-using System.Linq;
 using LanguageExt;
 using WorkShopUI.Clients;
-using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 

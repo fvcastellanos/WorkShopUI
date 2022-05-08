@@ -26,7 +26,7 @@ namespace WorkShopUI.Transformers
 
         protected static string GetIdFromSelfLink(SelfLink selfLink)
         {
-            if (selfLink.Self != null)
+            if ((selfLink != null) && (selfLink.Self != null))
             {
                 var self = selfLink.Self.Href;
                 var index = self.LastIndexOf("/");
