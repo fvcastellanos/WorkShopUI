@@ -24,17 +24,20 @@ namespace WorkShopUI.Clients
             Add("", url, content, $"Unable to add a new car line for brandId: {brandId}");
         }
 
-        public Option<CarLine> FindById(string carLineId)
+        public Option<CarLine> FindById(string carBrandId, string carLineId)
         {
-            try
-            {
 
-            }
-            catch (Exception exception)
-            {
+            var url = $"{String.Format(ClientConstants.CarLineResource, carBrandId)}/{carLineId}";
 
-                return null;
-            }
+            return FindById<CarLine>("", url, $"Unable to retrieve car_line_id: {carLineId}");
+        }
+
+        public void Update(string brandId, string lineId, CarLine carLine)
+        {
+            var url = $"{String.Format(ClientConstants.CarLineResource, brandId)}/{lineId}";
+            
+            var content = CreateStringContent(carLine);
+            Update("", url, content, $"Unable to update car_line_id: {lineId}");
         }
     }
 }

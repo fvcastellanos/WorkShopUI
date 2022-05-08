@@ -52,5 +52,36 @@ namespace WorkShopUI.Services
                 return "No es posible agregar una nueva línea de vehículo";
             }
         }
+
+        public Option<CarLineView> FindById(string brandId, string lineId)
+        {
+            try
+            {
+                return _carLineClient.FindById(brandId, lineId)
+                    .Map(CarLineTransformer.ToView);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Unable to retrieve car_line_id={lineId} for brand_id={brandId}");
+                return null;
+            }
+        }
+
+        public Either<string, CarLineView> Update(string brandId, CarLineView carLineView)
+        {
+            try
+            {
+                var model = CarLineTransformer.ToModel(carLineView);
+                _carLineClient.Update(brandId, carLineView.Id, model);
+
+                return carLineView;
+            }
+            catch (Exception exception)
+            {
+
+                _logger.LogError(exception, "Unable to update car_line_id={0} for brand_id={1}", carLineView.Id, brandId);
+                return "No es posible actualizar la línea del vehículo";
+            }
+        }
     }
 }

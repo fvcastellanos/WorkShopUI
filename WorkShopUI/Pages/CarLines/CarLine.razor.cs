@@ -64,12 +64,21 @@ namespace WorkShopUI.Pages
 
         protected override void Update()
         {
-            throw new NotImplementedException();
+            var result = Service.Update(CarBrandId, CarLineView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+            }, DisplayModalError);
         }
 
         protected void GetCarLine(string id)
         {
+            var holder = Service.FindById(CarBrandId, id);
 
+            holder.Match(ShowEditModal, 
+                () => ShowErrorMessage("No se pudo obtener la línea de vehículo"));
         }
 
         protected void ShowAddModal()
@@ -91,6 +100,16 @@ namespace WorkShopUI.Pages
             SearchView.Page = pageNumber;
             Search();
             StateHasChanged();
+        }
+
+        // ------------------------------------------------------------------------------------
+
+        private void ShowEditModal(CarLineView view)
+        {
+            CarLineView = view;
+            EditContext = new EditContext(CarLineView);
+
+            ShowEditModal();
         }
     }
 }
