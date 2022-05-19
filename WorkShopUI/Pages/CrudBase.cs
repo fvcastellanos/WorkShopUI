@@ -53,6 +53,8 @@ namespace WorkShopUI.Pages
 
         protected abstract void Search();
 
+        protected abstract void DisplayPage(int pageNumber);
+
         protected void SaveChanges()
         {
             if (!EditContext.Validate())

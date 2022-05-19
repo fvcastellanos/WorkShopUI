@@ -95,7 +95,7 @@ namespace WorkShopUI.Pages
             ShowModal();
         }
 
-        protected void DisplayPage(int pageNumber)
+        protected override void DisplayPage(int pageNumber)
         {
             SearchView.Page = pageNumber;
             Search();

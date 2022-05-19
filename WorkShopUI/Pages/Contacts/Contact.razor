@@ -1,27 +1,17 @@
-@inherits CarLineBase
+@inherits ContactBase
 
-@page "/car-brands/{CarBrandId}/lines"
+@page "/contacts"
 
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-10">
-            <h2>Líneas de Vehículos</h2>
+            <h2>Contactos</h2>
 
             <div class="top-separator">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Búsqueda</h4>
                         <fieldset>
-                            <div class="row">
-                                <div class="col-10">
-                                    <h3>@CarBrandName</h3>                                    
-                                </div>
-                                <div class="col">
-                                    <NavLink class="nav-link" href="car-brands">
-                                        <span class="oi oi-arrow-thick-left" aria-hidden="true"></span> Regresar
-                                    </NavLink>                                    
-                                </div>
-                            </div>
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
@@ -57,7 +47,7 @@
                                 </div>
                             </div>
                             <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
-                            <input type="button" class="btn btn-primary" value="Agregar Línea" @onclick="ShowAddModal" />
+                            <input type="button" class="btn btn-primary" value="Agregar Contacto" @onclick="ShowAddModal" />
                         </fieldset>
                     </div>
                 </div>
@@ -77,16 +67,16 @@
                         <th>Activo</th>
                     </thead>
                     <tbody>
-                        @foreach (var line in CarLines)
+                        @foreach (var contact in Contacts)
                         {
                             <tr>
                                 <td>
-                                    <div @onclick="() => GetCarLine(line.Id)" class="crud-icon"> 
+                                    <div @onclick="() => GetContact(contact.Id)" class="crud-icon"> 
                                         <span class="oi oi-brush" aria-hidden="true"></span>
                                     </div>
                                 </td>
-                                <td>@line.Name</td>
-                                <td><ActiveField Value="@line.Active"/></td>
+                                <td>@contact.Name</td>
+                                <td><ActiveField Value="@contact.Active"/></td>
                             </tr>
                         }
                     </tbody>
@@ -101,11 +91,11 @@
                             <div class="modal-header">
                                 @if (ModifyModal)
                                 {
-                                    <h5 class="modal-title">Actualizar Línea</h5>
+                                    <h5 class="modal-title">Actualizar Contacto</h5>
                                 }
                                 else
                                 {
-                                    <h5 class="modal-title">Agregar Línea</h5>
+                                    <h5 class="modal-title">Agregar Contacto</h5>
                                 }
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
                                     <span aria-hidden="true">&times;</span>
@@ -120,17 +110,17 @@
                                     <ValidationSummary/>
                                     <div class="form-group">
                                         <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="CarLineView.Name"/>
+                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ContactView.Name"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="CarLineView.Description" row="4"></textarea>
+                                        <textarea class="form-control" id="description" @bind="ContactView.Description" row="4"></textarea>
                                     </div>
                                     @if (ModifyModal)
                                     {
                                         <label>Activo</label>
                                         <div class="form-group">
-                                            <select class="form-control" @bind="CarLineView.Active">
+                                            <select class="form-control" @bind="ContactView.Active">
                                                 <option value="INACTIVE">No</option>
                                                 <option value="ACTIVE">Si</option>
                                             </select>
