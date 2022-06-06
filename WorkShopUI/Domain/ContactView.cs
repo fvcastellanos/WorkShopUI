@@ -7,6 +7,7 @@ namespace WorkShopUI.Domain
     {
         public string Id { get; set; }
 
+        [Required]
         [EnumDataType(typeof(ContactTypeView))]
         public string Type { get; set; }
 

@@ -1,4 +1,5 @@
 
+using LanguageExt;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -16,6 +17,18 @@ namespace WorkShopUI.Clients
 
             return Find<Contact>("", url, "Unable to retrieve search results");
             
+        }
+
+        public void Add(Contact contact)
+        {
+            var content = CreateStringContent(contact);
+            Add("", ClientConstants.ContactResource, content, $"Unable to add contact with name: {contact.Name}");
+        }
+
+        public Option<Contact> FindById(string id)
+        {            
+            var url = $"{ClientConstants.ContactResource}/{id}";
+            return FindById<Contact>("", url, "Contact {id} not found");
         }
     }
 }

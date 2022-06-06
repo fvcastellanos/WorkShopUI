@@ -21,6 +21,24 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="form-group">
+                                        <label for="searchCode">Código</label>
+                                        <input type="text" class="form-control" id="searchCode" placeholder="Código" @bind="SearchView.Code">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="type">Tipo de Contacto</label>
+                                        <select class="custom-select" id="type" @bind="SearchView.Type">
+                                            <option value="C" selected>Cliente</option>
+                                            <option value="P">Proveedor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
                                         <label for="searchActive">Activo</label>
                                         <select class="custom-select" id="searchActive" @bind="SearchView.Active">
                                             <option value="1">Si</option>
@@ -31,7 +49,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-5">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <label for="top">Filas</label>
                                         <select class="custom-select" id="top" @bind="SearchView.Size">
@@ -43,9 +61,8 @@
                                         </select>
                                     </div>                            
                                 </div>
-                                <div class="col">
-                                </div>
                             </div>
+
                             <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
                             <input type="button" class="btn btn-primary" value="Agregar Contacto" @onclick="ShowAddModal" />
                         </fieldset>
@@ -63,7 +80,9 @@
                 <table class="table table-striped">
                     <thead>
                         <th>#</th>
+                        <th>Código</th>
                         <th>Nombre</th>
+                        <th>Tipo</th>
                         <th>Activo</th>
                     </thead>
                     <tbody>
@@ -75,8 +94,10 @@
                                         <span class="oi oi-brush" aria-hidden="true"></span>
                                     </div>
                                 </td>
+                                <td>@contact.Code</td>
                                 <td>@contact.Name</td>
-                                <td><ActiveField Value="@contact.Active"/></td>
+                                <td><ContactTypeField Value="@contact.Type" /></td>
+                                <td><ActiveField Value="@contact.Active" /></td>
                             </tr>
                         }
                     </tbody>
@@ -109,8 +130,27 @@
                                     <DataAnnotationsValidator/>
                                     <ValidationSummary/>
                                     <div class="form-group">
+                                        <label for="type">Tipo</label>
+                                        <select class="custom-select" id="type" @bind="ContactView.Type">
+                                            <option value="CUSTOMER">Cliente</option>
+                                            <option value="PROVIDER">Proveedor</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="code">Código</label>
+                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ContactView.Code"/>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="name">Nombre</label>
                                         <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ContactView.Name"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name">Contacto</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Contacto" @bind="ContactView.Contact"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nit">NIT</label>
+                                        <input type="text" class="form-control" id="nit" placeholder="NIT" @bind="ContactView.TaxId"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="description">Descripción</label>
