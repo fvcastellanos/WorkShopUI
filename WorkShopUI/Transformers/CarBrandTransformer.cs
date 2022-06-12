@@ -15,15 +15,16 @@ namespace WorkShopUI.Transformers
             };
         }
 
-        public static CarBrandView ToView(CarBrand carBrand)
+        public static CarBrandView ToView(string id, CarBrand carBrand)
         {
             return new CarBrandView
             {
-                Id = GetId(carBrand),
+                Id = id,
                 Name = carBrand.Name,
                 Description = carBrand.Description,
                 Active = carBrand.Active
             };
         }
+
     }
 }

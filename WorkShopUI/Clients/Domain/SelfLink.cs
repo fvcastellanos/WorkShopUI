@@ -5,6 +5,6 @@ namespace WorkShopUI.Clients.Domain
     public class SelfLink
     {
         [JsonPropertyName("self")]
-        public Self Self { get; set; }
+        public Self? Self { get; set; }
     }
 }

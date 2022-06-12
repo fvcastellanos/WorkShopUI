@@ -1,18 +1,21 @@
-// using New
-
 using System.Text.Json.Serialization;
+using Google.Cloud.Firestore;
 
 namespace WorkShopUI.Clients.Domain
 {
+    [FirestoreData]
     public class CarBrand : ResourceObject
     {
-        [JsonPropertyName("name")]
+        [FirestoreDocumentId]
+        public string Id { get; set; }
+
+        [FirestoreProperty("name")]
         public string Name { get; set; }
 
-        [JsonPropertyName("description")]
+        [FirestoreProperty("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("active")]
+        [FirestoreProperty("active")]
         public string Active { get; set; }
     }
 }

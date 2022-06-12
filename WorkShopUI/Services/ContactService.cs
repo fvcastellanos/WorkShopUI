@@ -1,3 +1,4 @@
+using Google.Cloud.Firestore;
 using LanguageExt;
 using WorkShopUI.Clients;
 using WorkShopUI.Domain;
@@ -45,6 +46,23 @@ namespace WorkShopUI.Services
             try
             {
                 var model = ContactTransformer.ToModel(contactView);
+
+                var db = FirestoreDb.Create("sandbox-e4a26");
+
+                var docRef = db.Collection("contacts")
+                    .Document("contact");
+
+                var foo = new Dictionary<string, object>
+                {
+                    { "id", Guid.NewGuid().ToString() },
+                    { "type", contactView.Type },
+                    { "code", contactView.Code },
+                    { "name", contactView.Name },
+                    { "contact", contactView.Contact }
+                };
+
+                var task = docRef.SetAsync(foo).Result;
+                
                 _contactClient.Add(model);
 
                 return contactView;

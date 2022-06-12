@@ -1,9 +1,13 @@
+using Google.Cloud.Firestore;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Steeltoe.Extensions.Configuration.Placeholder;
+using Typesense;
+using Typesense.Setup;
 using WorkShopUI.Clients;
 using WorkShopUI.Data;
 using WorkShopUI.Services;
+using WorkShopUI.SearchSchema;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,31 @@ builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
     config.BaseAddress = new Uri(apiUrl); // need to use an environment variable
 
 });
+
+// Add Firestore DB
+builder.Services.AddSingleton<FirestoreDb>(config => {
+
+    var firebaseProject = builder.Configuration["Firebase:Project"];
+    return FirestoreDb.Create(firebaseProject);
+});
+
+// Add typesense client
+builder.Services.AddTypesenseClient(config => {
+
+    var host = builder.Configuration["Typesense:Host"];
+    var port = builder.Configuration["Typesense:Port"];
+    var protocol = builder.Configuration["Typesense:Protocol"];
+    var apiKey = builder.Configuration["Typesense:ApiKey"];
+
+    config.ApiKey = apiKey;
+    config.Nodes = new List<Node>
+    {
+        new Node(host, port, protocol)
+    };
+});
+
+// Build typesense schemas
+builder.Services.AddSingleton<SchemaBuilder>();
 
 // HTTP Clients
 builder.Services.AddScoped<CarBrandClient>();
@@ -53,5 +82,9 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+var schemaBuilder = app.Services.GetService<SchemaBuilder>();
+schemaBuilder.BuildSchema();
+
 
 app.Run();

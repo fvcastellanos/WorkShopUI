@@ -31,7 +31,6 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
-
         }
 
         protected override void Search()
@@ -39,13 +38,21 @@ namespace WorkShopUI.Pages
             CarBrands = new List<CarBrandView>();
             HideErrorMessage();
 
+            // var result = Service.Search(SearchView);
+            // result.Match(right => {
+
+            //     SearchResponse = right;
+            //     CarBrands = right.Content;
+
+            // }, ShowErrorMessage); 
+
             var result = Service.Search(SearchView);
             result.Match(right => {
 
-                SearchResponse = right;
-                CarBrands = right.Content;
+                CarBrands = right;
 
             }, ShowErrorMessage); 
+
         }
         
         protected override void DisplayPage(int pageNumber)
@@ -78,7 +85,7 @@ namespace WorkShopUI.Pages
 
         protected void GetLines(string id, string name)
         {
-            NavigationManager.NavigateTo($"/car-brands/{id}/lines?CarBrandName={name}");
+            // NavigationManager.NavigateTo($"/car-brands/{id}/lines?CarBrandName={name}");
         }
 
         protected override void Update()
@@ -94,6 +101,7 @@ namespace WorkShopUI.Pages
 
         protected override void Add()
         {
+            // var result = Service.Add(CarBrandView);
             var result = Service.Add(CarBrandView);
 
             result.Match(right => {

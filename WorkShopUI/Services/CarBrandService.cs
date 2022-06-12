@@ -2,34 +2,44 @@ using LanguageExt;
 using WorkShopUI.Clients;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
+using Google.Cloud.Firestore;
+using Typesense;
+using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Services
 {
     public class CarBrandService
     {
+        private const string CollectionName = "car-brands";
         private readonly ILogger _logger;
 
-        private readonly CarBrandClient _carBrandClient;
+        private readonly FirestoreDb _firestoreDb;
 
-        public CarBrandService(ILogger<CarBrandService> logger, CarBrandClient carBrandClient)
+        private readonly ITypesenseClient _typesenseClient;
+
+        public CarBrandService(ILogger<CarBrandService> logger, 
+                               FirestoreDb firestoreDb,
+                               ITypesenseClient typesenseClient)
         {
             _logger = logger;
-            _carBrandClient = carBrandClient;
+            _firestoreDb = firestoreDb;
+            _typesenseClient = typesenseClient;
         }
 
-        public Either<string, PagedView<CarBrandView>> Search(SearchView searchView)
+        public Either<string, IEnumerable<CarBrandView>> Search(SearchView searchView)
         {
             try
             {
-                var searchResult = _carBrandClient.Search(searchView.Active, searchView.Name, searchView.Page, searchView.Size);
+                var query = new SearchParameters(searchView.Name, "name");
+                query.FilterBy = "active:ACTIVE";
+                query.SortBy = "name:asc";
+                query.LimitHits = searchView.Size.ToString();
 
-                return new PagedView<CarBrandView>
-                {
-                    Pageable = CarBrandTransformer.BuildPageable(searchResult),
-                    Content = searchResult.Content
-                                .Select(CarBrandTransformer.ToView)
-                                .ToList()
-                };
+                var search = _typesenseClient.Search<CarBrandView>(CollectionName, query)
+                    .Result;
+
+                return search.Hits.Select(hit => hit.Document)
+                    .ToList();
             }
             catch (Exception exception)
             {
@@ -42,9 +52,22 @@ namespace WorkShopUI.Services
         {
             try
             {
+                var id = Guid.NewGuid()
+                    .ToString();
+
                 var model = CarBrandTransformer.ToModel(carBrandView);
-                var carBrand = _carBrandClient.Add(model);
-                return CarBrandTransformer.ToView(carBrand);
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(id);
+                
+                var task = docRef.SetAsync(model)
+                    .Result;
+
+                var view = CarBrandTransformer.ToView(id, model);
+
+                _typesenseClient.UpsertDocument<CarBrandView>(CollectionName, view)
+                    .Wait();
+
+                return view;
             }
             catch (Exception exception)
             {
@@ -57,9 +80,20 @@ namespace WorkShopUI.Services
         {
             try
             {
-                return _carBrandClient.FindById(id)
-                    .Map(CarBrandTransformer.ToView)
-                    .FirstOrDefault();
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(id);
+
+                var snapshot = docRef.GetSnapshotAsync()
+                    .Result;
+                
+                if (snapshot.Exists)
+                {
+                    var carBrand = snapshot.ConvertTo<CarBrand>();
+                    return CarBrandTransformer.ToView(id, carBrand);
+                }
+
+                return null;
+
             }
             catch (Exception exception)
             {
@@ -73,7 +107,23 @@ namespace WorkShopUI.Services
             try
             {
                 var model = CarBrandTransformer.ToModel(view);
-                _carBrandClient.Update(view.Id, model);
+
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(view.Id);
+
+                var snapshot = docRef.GetSnapshotAsync()
+                    .Result;
+                
+                if (snapshot.Exists)
+                {
+                    _logger.LogInformation("Update document id: {0}", view.Id);
+                    docRef.SetAsync(model)
+                        .Wait();
+
+                    _logger.LogInformation("Update document index for id: {0}", view.Id);
+                    _typesenseClient.UpdateDocument<CarBrandView>(CollectionName, view.Id, view)
+                        .Wait();
+                }
 
                 return view;
             }
