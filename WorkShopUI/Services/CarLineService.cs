@@ -1,5 +1,8 @@
+using Google.Cloud.Firestore;
 using LanguageExt;
+using Typesense;
 using WorkShopUI.Clients;
+using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 
@@ -7,28 +10,41 @@ namespace WorkShopUI.Services
 {
     public class CarLineService
     {
+        private const string CollectionName = "car-lines";
+
         private readonly ILogger _logger;
         private readonly CarLineClient _carLineClient;
 
-        public CarLineService(ILogger<CarLineService> logger, CarLineClient carLineClient)
+        private readonly FirestoreDb _firestoreDb;
+
+        private readonly ITypesenseClient _typesenseClient;
+
+
+        public CarLineService(ILogger<CarLineService> logger, 
+                              CarLineClient carLineClient,
+                              FirestoreDb firestoreDb,
+                              ITypesenseClient typesenseClient)
         {
             _carLineClient = carLineClient;
             _logger = logger;
+            _firestoreDb = firestoreDb;
+            _typesenseClient = typesenseClient;
         }
 
-        public Either<string, PagedView<CarLineView>> Search(string carBrandId, SearchView searchView)
+        public Either<string, IEnumerable<CarLineView>> Search(string carBrandId, SearchView searchView)
         {           
             try
             {
-                var searchResult = _carLineClient.Search(carBrandId, searchView.Active, searchView.Name, searchView.Page, searchView.Size);
+                var query = new SearchParameters(searchView.Name, "name");
+                query.FilterBy = $"carBrandId:{carBrandId} && active:ACTIVE";
+                query.SortBy = "name:asc";
+                query.LimitHits = searchView.Size.ToString();
 
-                return new PagedView<CarLineView>
-                {
-                    Pageable = CarLineTransformer.BuildPageable(searchResult),
-                    Content = searchResult.Content
-                                .Select(CarLineTransformer.ToView)
-                                .ToList()
-                };
+                var search = _typesenseClient.Search<CarLineView>(CollectionName, query)
+                    .Result;
+
+                return search.Hits.Select(hit => hit.Document)
+                    .ToList();
             }
             catch (Exception exception)
             {
@@ -37,12 +53,24 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Either<string, CarLineView> Add(string brandId, CarLineView carLineView)
+        public Either<string, CarLineView> Add(CarLineView carLineView)
         {
             try
             {
+                var id = Guid.NewGuid()
+                    .ToString();
+
                 var model = CarLineTransformer.ToModel(carLineView);
-                _carLineClient.Add(brandId, model);
+
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(id);
+
+               docRef.SetAsync(model)
+                    .Wait();
+                
+                carLineView.Id = id;
+                _typesenseClient.UpsertDocument<CarLineView>(CollectionName, carLineView)
+                    .Wait();
 
                 return carLineView;
             }
@@ -53,33 +81,56 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Option<CarLineView> FindById(string brandId, string lineId)
+        public Option<CarLineView> FindById(string lineId)
         {
             try
             {
-                return _carLineClient.FindById(brandId, lineId)
-                    .Map(CarLineTransformer.ToView);
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(lineId);
+
+                var snapshot = docRef.GetSnapshotAsync()
+                    .Result;
+
+                if (snapshot.Exists)
+                {
+                    var carLine = snapshot.ConvertTo<CarLine>();
+                    return CarLineTransformer.ToView(carLine);
+                }
+
+                return null;
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Unable to retrieve car_line_id={lineId} for brand_id={brandId}");
+                _logger.LogError(exception, $"Unable to retrieve car_line_id={lineId}");
                 return null;
             }
         }
 
-        public Either<string, CarLineView> Update(string brandId, CarLineView carLineView)
+        public Either<string, CarLineView> Update(CarLineView carLineView)
         {
             try
             {
-                var model = CarLineTransformer.ToModel(carLineView);
-                _carLineClient.Update(brandId, carLineView.Id, model);
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(carLineView.Id);
+
+                var snapshot = docRef.GetSnapshotAsync()
+                    .Result;
+
+                if (snapshot.Exists)
+                {
+                    var model = CarLineTransformer.ToModel(carLineView);
+                    docRef.SetAsync(model)
+                        .Wait();
+
+                    _typesenseClient.UpsertDocument<CarLineView>(CollectionName, carLineView)
+                        .Wait();
+                }
 
                 return carLineView;
             }
             catch (Exception exception)
             {
-
-                _logger.LogError(exception, "Unable to update car_line_id={0} for brand_id={1}", carLineView.Id, brandId);
+                _logger.LogError(exception, "Unable to update car_line_id={0}", carLineView.Id);
                 return "No es posible actualizar la línea del vehículo";
             }
         }

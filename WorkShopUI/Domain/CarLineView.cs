@@ -6,6 +6,8 @@ namespace WorkShopUI.Domain
     {
         public string Id { get; set; }
 
+        public string CarBrandId { get; set; }
+
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }

@@ -34,7 +34,6 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
-
         }
 
         protected override void Search()
@@ -46,14 +45,15 @@ namespace WorkShopUI.Pages
 
             result.Match(right => {
 
-                SearchResponse = right;
-                CarLines = right.Content;
+                CarLines = right;
+
             }, ShowErrorMessage);
+
         }
 
         protected override void Add()
         {
-            var result = Service.Add(CarBrandId, CarLineView);
+            var result = Service.Add(CarLineView);
 
             result.Match(right => {
 
@@ -64,7 +64,7 @@ namespace WorkShopUI.Pages
 
         protected override void Update()
         {
-            var result = Service.Update(CarBrandId, CarLineView);
+            var result = Service.Update(CarLineView);
 
             result.Match(right => {
 
@@ -75,7 +75,7 @@ namespace WorkShopUI.Pages
 
         protected void GetCarLine(string id)
         {
-            var holder = Service.FindById(CarBrandId, id);
+            var holder = Service.FindById(id);
 
             holder.Match(ShowEditModal, 
                 () => ShowErrorMessage("No se pudo obtener la línea de vehículo"));
@@ -85,6 +85,7 @@ namespace WorkShopUI.Pages
         {
             CarLineView = new CarLineView()
             {
+                CarBrandId = CarBrandId,
                 Active = "ACTIVE"
             };
 

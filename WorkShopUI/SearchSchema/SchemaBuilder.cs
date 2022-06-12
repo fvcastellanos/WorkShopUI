@@ -69,7 +69,19 @@ namespace WorkShopUI.SearchSchema
                         new Field("description", FieldType.String, false, true),
                         new Field("active", FieldType.String, false, false, true, true)
                     }
-                }
+                },
+                new SchemaDefinition
+                {
+                    Name = "car-lines",
+                    Fields = new List<Field>
+                    {
+                        new Field("id", FieldType.String),
+                        new Field("carBrandId", FieldType.String, false, false, true),
+                        new Field("name", FieldType.String, true, false, true, true),
+                        new Field("description", FieldType.String, false, true),
+                        new Field("active", FieldType.String, false, false, true, true)
+                    }
+                },
             };
         }
     }

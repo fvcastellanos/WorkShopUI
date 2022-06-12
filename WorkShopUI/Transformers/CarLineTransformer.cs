@@ -9,7 +9,8 @@ namespace WorkShopUI.Transformers
         {
             return new CarLineView
             {
-                Id = GetId(carLine),
+                Id = carLine.Id,
+                CarBrandId = carLine.CarBrandId,
                 Name = carLine.Name,
                 Description = carLine.Description,
                 Active = carLine.Active
@@ -20,6 +21,7 @@ namespace WorkShopUI.Transformers
         {
             return new CarLine
             {
+                CarBrandId = view.CarBrandId,
                 Name = view.Name,
                 Description = view.Description,
                 Active = view.Active
