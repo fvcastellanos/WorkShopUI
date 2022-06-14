@@ -82,6 +82,21 @@ namespace WorkShopUI.SearchSchema
                         new Field("active", FieldType.String, false, false, true, true)
                     }
                 },
+                new SchemaDefinition
+                {
+                    Name = "contacts",
+                    Fields = new List<Field>
+                    {
+                        new Field("id", FieldType.String),
+                        new Field("code", FieldType.String, false, false, true),
+                        new Field("name", FieldType.String, true, false, true, true),
+                        new Field("type", FieldType.String, false, false, true, true),
+                        new Field("active", FieldType.String, false, false, true, true),
+                        new Field("taxId", FieldType.String, false, true),
+                        new Field("contact", FieldType.String, false, true),
+                        new Field("description", FieldType.String, false, true)
+                    }
+                },
             };
         }
     }

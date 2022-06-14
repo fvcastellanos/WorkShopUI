@@ -15,6 +15,15 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
+                                        <label for="searchText">Texto</label>
+                                        <input type="text" class="form-control" id="searchText" placeholder="Nombre o Código" @bind="SearchView.Text">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
                                         <label for="searchName">Nombre</label>
                                         <input type="text" class="form-control" id="searchName" placeholder="Nombre" @bind="SearchView.Name">
                                     </div>
@@ -32,8 +41,8 @@
                                     <div class="form-group">
                                         <label for="type">Tipo de Contacto</label>
                                         <select class="custom-select" id="type" @bind="SearchView.Type">
-                                            <option value="C" selected>Cliente</option>
-                                            <option value="P">Proveedor</option>
+                                            <option value="CUSTOMER">Cliente</option>
+                                            <option value="PROVIDER">Proveedor</option>
                                         </select>
                                     </div>
                                 </div>
@@ -75,7 +84,7 @@
             
             <div class="top-separator">
 
-                <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" />
+                @* <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" /> *@
 
                 <table class="table table-striped">
                     <thead>

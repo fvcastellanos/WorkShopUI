@@ -29,7 +29,7 @@ namespace WorkShopUI.Pages
                 Size = 25,
                 Active = 1,
                 Name = "",
-                Type = "C"
+                Type = "CUSTOMER"
             };
 
             HideAddModal();
@@ -62,8 +62,8 @@ namespace WorkShopUI.Pages
 
             result.Match(right => {
 
-                SearchResponse = right;
-                Contacts = right.Content;                
+                // SearchResponse = right;
+                Contacts = right;
             }, ShowErrorMessage);
         }
 

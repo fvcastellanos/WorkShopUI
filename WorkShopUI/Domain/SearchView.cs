@@ -3,6 +3,7 @@ namespace WorkShopUI.Domain
 {
     public class SearchView
     {
+        public string Text { get; set; }
         public string Code { get; set; }
         public int Active { get; set; }
         public string Name { get; set; }

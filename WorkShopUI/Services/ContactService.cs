@@ -1,6 +1,8 @@
 using Google.Cloud.Firestore;
 using LanguageExt;
+using Typesense;
 using WorkShopUI.Clients;
+using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 
@@ -8,30 +10,54 @@ namespace WorkShopUI.Services
 {
     public class ContactService
     {
+        private const string CollectionName = "contacts";
+
         private readonly ILogger _logger;
 
         private readonly ContactClient _contactClient;
 
-        public ContactService(ILogger<ContactService> logger, ContactClient contactClient)
+        private readonly ITypesenseClient _typesenseClient;
+
+        private readonly FirestoreDb _firestoreDb;
+
+        public ContactService(ILogger<ContactService> logger, 
+                              ContactClient contactClient,
+                              ITypesenseClient typesenseClient,
+                              FirestoreDb firestoreDb)
         {
             _logger = logger;
             _contactClient = contactClient;
+            _typesenseClient = typesenseClient;
+            _firestoreDb = firestoreDb;
         }
 
-        public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) {
+        public Either<string, IEnumerable<ContactView>> Search(ContactSearchView searchView) {
 
             try {
-                
-                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type, 
-                    searchView.Page, searchView.Size);
+                var query = new SearchParameters(searchView.Text, "code, name");
+                query.FilterBy = $"active:ACTIVE && type:{searchView.Type}";
+                query.SortBy = "name:asc";
+                query.LimitHits = searchView.Size.ToString();
 
-                return new PagedView<ContactView>
-                {
-                    Pageable = ContactTransformer.BuildPageable(searchResult),
-                    Content = searchResult.Content 
-                                .Select(ContactTransformer.ToView)
-                                .ToList()
-                };
+                var search = _typesenseClient.Search<Contact>(CollectionName, query)
+                    .Result;
+
+                return search.Hits
+                    .Select(hit => ContactTransformer.ToView(hit.Document))
+                    .ToList();
+
+                // var search = _sen
+
+                // var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type, 
+                //     searchView.Page, searchView.Size);
+
+                // return new PagedView<ContactView>
+                // {
+                //     Pageable = ContactTransformer.BuildPageable(searchResult),
+                //     Content = searchResult.Content 
+                //                 .Select(ContactTransformer.ToView)
+                //                 .ToList()
+                // };
             }
             catch (Exception exception) 
             {
@@ -45,31 +71,25 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var model = ContactTransformer.ToModel(contactView);
+                var Id = Guid.NewGuid()
+                    .ToString();
 
-                var db = FirestoreDb.Create("sandbox-e4a26");
+                var model = ContactTransformer.ToModel(contactView);               
 
-                var docRef = db.Collection("contacts")
-                    .Document("contact");
+                var docRef = _firestoreDb.Collection(CollectionName)
+                    .Document(Id);
 
-                var foo = new Dictionary<string, object>
-                {
-                    { "id", Guid.NewGuid().ToString() },
-                    { "type", contactView.Type },
-                    { "code", contactView.Code },
-                    { "name", contactView.Name },
-                    { "contact", contactView.Contact }
-                };
+                docRef.SetAsync(model)
+                    .Wait();
 
-                var task = docRef.SetAsync(foo).Result;
-                
-                _contactClient.Add(model);
+                contactView.Id = Id;
+                _typesenseClient.UpsertDocument<ContactView>(CollectionName, contactView)
+                    .Wait();
 
                 return contactView;
             }
             catch (Exception exception)
             {
-                
                 _logger.LogError(exception, "Unable to add new contact");
                 return $"No es posible agregar el contacto de: {contactView.Name}";
             }

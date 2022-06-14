@@ -1,29 +1,34 @@
 
 using System.Text.Json.Serialization;
+using Google.Cloud.Firestore;
 
 namespace WorkShopUI.Clients.Domain
 {
+    [FirestoreData]
     public class Contact : ResourceObject
     {
-        [JsonPropertyName("name")]
+        [FirestoreDocumentId]
+        public string Id { get; set; }
+
+        [FirestoreProperty("name")]
         public string Name { get; set; }
 
-        [JsonPropertyName("type")]
+        [FirestoreProperty("type")]
         public string Type { get; set; }
 
-        [JsonPropertyName("code")]
+        [FirestoreProperty("code")]
         public string Code { get; set; }
 
-        [JsonPropertyName("contact")]
+        [FirestoreProperty("contact")]
         public string ContactName { get; set; }
 
-        [JsonPropertyName("taxId")]
+        [FirestoreProperty("taxId")]
         public string TaxId { get; set; }
 
-        [JsonPropertyName("description")]
+        [FirestoreProperty("description")]
         public string Description { get; set; }
 
-        [JsonPropertyName("active")]
+        [FirestoreProperty("active")]
         public string Active { get; set; }
     }
 }

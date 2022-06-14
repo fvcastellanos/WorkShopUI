@@ -86,5 +86,4 @@ app.MapFallbackToPage("/_Host");
 var schemaBuilder = app.Services.GetService<SchemaBuilder>();
 schemaBuilder.BuildSchema();
 
-
 app.Run();

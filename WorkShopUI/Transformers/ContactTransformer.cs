@@ -9,7 +9,8 @@ namespace WorkShopUI.Transformers
         {
             return new ContactView
             {
-                Id = GetId(contact),
+                // Id = GetId(contact),
+                Id = contact.Id,
                 Code = contact.Code,
                 Description = contact.Description,
                 Name = contact.Name,
