@@ -76,7 +76,8 @@ namespace WorkShopUI.Pages
         {
             var holder = ContactService.FindById(id);
 
-            
+            holder.Match(ShowEditModal, 
+                () => ShowErrorMessage("No encontro el contacto seleccionado"));
         }
 
         protected void ShowAddModal() 
@@ -92,6 +93,13 @@ namespace WorkShopUI.Pages
 
             HideModalError();
             ShowModal();
+        }
+
+        private void ShowEditModal(ContactView view)
+        {
+            ContactView = view;
+            EditContext = new EditContext(ContactView);
+            ShowEditModal();
         }
     }
 }
