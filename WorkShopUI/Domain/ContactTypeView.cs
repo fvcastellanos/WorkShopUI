@@ -3,7 +3,7 @@ namespace WorkShopUI.Domain
 {
     public enum ContactTypeView
     {
-        CLIENT,
+        CUSTOMER,
         PROVIDER
     }
 }

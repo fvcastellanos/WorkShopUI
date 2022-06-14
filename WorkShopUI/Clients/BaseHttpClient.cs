@@ -95,7 +95,11 @@ namespace WorkShopUI.Clients
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(errorMessage);
+                    var apiError = response.Content
+                        .ReadFromJsonAsync<ApiError>()
+                        .Result;
+
+                    throw new HttpRequestException(apiError.Message);
                 }
             }
         }

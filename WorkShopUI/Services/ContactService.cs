@@ -37,7 +37,6 @@ namespace WorkShopUI.Services
                 _logger.LogError(exception, "Unable to perform search");
                 return "No es posible realizar la búsqueda de Contactos";
             }
-            
         }
 
         public Either<string, ContactView> Add(ContactView contactView)
@@ -49,9 +48,13 @@ namespace WorkShopUI.Services
 
                 return contactView;
             }
+            catch (HttpRequestException httpRequestException)
+            {                
+                _logger.LogError(httpRequestException, "Unable to add new contact");
+                return httpRequestException.Message;
+            }
             catch (Exception exception)
-            {
-                
+            {                
                 _logger.LogError(exception, "Unable to add new contact");
                 return $"No es posible agregar el contacto de: {contactView.Name}";
             }
