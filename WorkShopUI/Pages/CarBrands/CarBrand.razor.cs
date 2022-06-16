@@ -38,14 +38,6 @@ namespace WorkShopUI.Pages
             CarBrands = new List<CarBrandView>();
             HideErrorMessage();
 
-            // var result = Service.Search(SearchView);
-            // result.Match(right => {
-
-            //     SearchResponse = right;
-            //     CarBrands = right.Content;
-
-            // }, ShowErrorMessage); 
-
             var result = Service.Search(SearchView);
             result.Match(right => {
 

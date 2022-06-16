@@ -19,6 +19,9 @@ namespace WorkShopUI.Clients.Domain
 
         [FirestoreProperty("active")]
         public string Active { get; set; }
+
+        [FirestoreProperty("tenant")]
+        public string Tenant { get; set; }
     }
 
 }

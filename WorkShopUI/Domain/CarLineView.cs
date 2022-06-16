@@ -17,5 +17,7 @@ namespace WorkShopUI.Domain
 
         [EnumDataType(typeof(ActiveTypeView))]
         public string Active { get; set; }
+
+        public string Tenant { get; set; }
     }
 }

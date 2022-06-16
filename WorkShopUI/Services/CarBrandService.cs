@@ -8,7 +8,7 @@ using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Services
 {
-    public class CarBrandService
+    public class CarBrandService : ServiceBase
     {
         private const string CollectionName = "car-brands";
         private readonly ILogger _logger;
@@ -19,7 +19,7 @@ namespace WorkShopUI.Services
 
         public CarBrandService(ILogger<CarBrandService> logger, 
                                FirestoreDb firestoreDb,
-                               ITypesenseClient typesenseClient)
+                               ITypesenseClient typesenseClient) : base(firestoreDb)
         {
             _logger = logger;
             _firestoreDb = firestoreDb;
@@ -31,7 +31,7 @@ namespace WorkShopUI.Services
             try
             {
                 var query = new SearchParameters(searchView.Name, "name");
-                query.FilterBy = "active:ACTIVE";
+                query.FilterBy = $"active:ACTIVE && tenant:{GetTenant()}";
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
@@ -52,17 +52,25 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var id = Guid.NewGuid()
-                    .ToString();
-
-                var model = CarBrandTransformer.ToModel(carBrandView);
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(id);
+                if (findExistingBrand(carBrandView.Name))
+                {
+                    _logger.LogError("car brand with name={0} already exists", carBrandView.Name);
+                    return $"Ya existe una marca {carBrandView.Name}";
+                }
                 
-                var task = docRef.SetAsync(model)
-                    .Result;
+                var id = BuildGuid();
+                var model = new CarBrand
+                {
+                    Name = carBrandView.Name,
+                    Description = carBrandView.Description,
+                    Active = "ACTIVE",
+                    Tenant = GetTenant()
+                };
 
-                var view = CarBrandTransformer.ToView(id, model);
+                AddToFireStore<CarBrand>(CollectionName, id, model);
+
+                var view = CarBrandTransformer.ToView(model);
+                view.Id = id;
 
                 _typesenseClient.UpsertDocument<CarBrandView>(CollectionName, view)
                     .Wait();
@@ -80,16 +88,12 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(id);
-
-                var snapshot = docRef.GetSnapshotAsync()
-                    .Result;
+                var snapshot = FindById(CollectionName, id);
                 
                 if (snapshot.Exists)
                 {
                     var carBrand = snapshot.ConvertTo<CarBrand>();
-                    return CarBrandTransformer.ToView(id, carBrand);
+                    return CarBrandTransformer.ToView(carBrand);
                 }
 
                 return null;
@@ -106,22 +110,23 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var model = CarBrandTransformer.ToModel(view);
+                var snapshot = FindById(CollectionName, view.Id);
 
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(view.Id);
-
-                var snapshot = docRef.GetSnapshotAsync()
-                    .Result;
-                
                 if (snapshot.Exists)
                 {
                     _logger.LogInformation("Update document id: {0}", view.Id);
-                    docRef.SetAsync(model)
-                        .Wait();
+                    var model = new CarBrand
+                    {
+                        Name = view.Name,
+                        Description = view.Description,
+                        Active = view.Active,
+                        Tenant = GetTenant()
+                    };
+
+                    AddToFireStore<CarBrand>(CollectionName, view.Id, model);
 
                     _logger.LogInformation("Update document index for id: {0}", view.Id);
-                    _typesenseClient.UpdateDocument<CarBrandView>(CollectionName, view.Id, view)
+                    _typesenseClient.UpsertDocument<CarBrandView>(CollectionName, view)
                         .Wait();
                 }
 
@@ -132,6 +137,19 @@ namespace WorkShopUI.Services
                 _logger.LogError("unable to update car_brand_id={0} - {1}", view.Id, exception.Message);
                 return "No es posible actualizar la informacion del fabricante";
             }
+        }
+
+        // -----------------------------------------------------------------------------------------------
+
+        private bool findExistingBrand(string name)
+        {
+            var query = new SearchParameters(name, "name");
+            query.FilterBy = $"name:{name}";
+
+            var search = _typesenseClient.Search<CarBrand>(CollectionName, query)
+                .Result;
+
+            return search.Found > 0;
         }
     }
 }
