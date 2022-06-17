@@ -1,32 +1,28 @@
 using Google.Cloud.Firestore;
 using LanguageExt;
 using Typesense;
-using WorkShopUI.Clients;
 using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services
 {
-    public class ContactService
+    public class ContactService : ServiceBase
     {
         private const string CollectionName = "contacts";
 
         private readonly ILogger _logger;
-
-        private readonly ContactClient _contactClient;
 
         private readonly ITypesenseClient _typesenseClient;
 
         private readonly FirestoreDb _firestoreDb;
 
         public ContactService(ILogger<ContactService> logger, 
-                              ContactClient contactClient,
                               ITypesenseClient typesenseClient,
                               FirestoreDb firestoreDb)
+                              : base(logger, firestoreDb, typesenseClient)
         {
             _logger = logger;
-            _contactClient = contactClient;
             _typesenseClient = typesenseClient;
             _firestoreDb = firestoreDb;
         }
@@ -39,52 +35,43 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                var search = _typesenseClient.Search<Contact>(CollectionName, query)
-                    .Result;
-
-                return search.Hits
-                    .Select(hit => ContactTransformer.ToView(hit.Document))
-                    .ToList();
-
-                // var search = _sen
-
-                // var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type, 
-                //     searchView.Page, searchView.Size);
-
-                // return new PagedView<ContactView>
-                // {
-                //     Pageable = ContactTransformer.BuildPageable(searchResult),
-                //     Content = searchResult.Content 
-                //                 .Select(ContactTransformer.ToView)
-                //                 .ToList()
-                // };
+                return Search<ContactView>(CollectionName, query);
             }
             catch (Exception exception) 
             {
                 _logger.LogError(exception, "Unable to perform search");
                 return "No es posible realizar la búsqueda de Contactos";
-            }
-            
+            }            
         }
 
         public Either<string, ContactView> Add(ContactView contactView)
         {
             try
             {
-                var Id = Guid.NewGuid()
-                    .ToString();
+                if (findByCode(contactView.Code) != null)
+                {
+                    _logger.LogError("Code: {0} already exists for tenant: {1}", contactView.Code, GetTenant());
+                    return $"El código: {contactView.Code} ya existe";
+                }
 
-                var model = ContactTransformer.ToModel(contactView);               
+                var id = BuildGuid();
 
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(Id);
+                var model = new Contact
+                {
+                    Code = contactView.Code,
+                    Name = contactView.Name,
+                    Description = contactView.Description,
+                    TaxId = contactView.TaxId,
+                    ContactName = contactView.Contact,
+                    Type = contactView.Type,
+                    Active = "ACTIVE",
+                    Tenant = GetTenant()
+                };
 
-                docRef.SetAsync(model)
-                    .Wait();
+                contactView.Id = id;
 
-                contactView.Id = Id;
-                _typesenseClient.UpsertDocument<ContactView>(CollectionName, contactView)
-                    .Wait();
+                AddToFireStore<Contact>(CollectionName, id, model);
+                UpdateSearchIndex<ContactView>(CollectionName, contactView);
 
                 return contactView;
             }
@@ -99,14 +86,37 @@ namespace WorkShopUI.Services
         {
             try
             {
-                return _contactClient.FindById(id)
-                    .Map(ContactTransformer.ToView);
+                var snapshot = FindById(CollectionName, id);
+
+                if (snapshot.Exists)
+                {
+                    var contact = snapshot.ConvertTo<Contact>();
+                    return ContactTransformer.ToView(contact);
+                }
+
+                _logger.LogInformation("Contact with id: {0}  not found", id);
+                return null;
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception, $"Unable to find Contact with id: {id}");
                 return null;
             }
+        }
+
+        private Contact findByCode(string code)
+        {
+            var reference = FirestoreDb.Collection(CollectionName);
+            var query = reference.WhereEqualTo("code", code)
+                .WhereEqualTo("tenant", GetTenant());
+                
+            var snapshot = query.GetSnapshotAsync()
+                .Result;
+
+            var contact = snapshot.FirstOrDefault();
+
+            return contact != null ? contact.ConvertTo<Contact>()
+                : null;
         }
     }
 }

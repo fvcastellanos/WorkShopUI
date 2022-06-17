@@ -28,6 +28,7 @@ namespace WorkShopUI.Pages
                 Page = 0,
                 Size = 25,
                 Active = 1,
+                Text = "",
                 Name = "",
                 Type = "CUSTOMER"
             };
@@ -61,8 +62,6 @@ namespace WorkShopUI.Pages
             var result = ContactService.Search(SearchView);
 
             result.Match(right => {
-
-                // SearchResponse = right;
                 Contacts = right;
             }, ShowErrorMessage);
         }

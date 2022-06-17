@@ -1,5 +1,4 @@
 using LanguageExt;
-using WorkShopUI.Clients;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 using Google.Cloud.Firestore;
@@ -19,7 +18,8 @@ namespace WorkShopUI.Services
 
         public CarBrandService(ILogger<CarBrandService> logger, 
                                FirestoreDb firestoreDb,
-                               ITypesenseClient typesenseClient) : base(firestoreDb)
+                               ITypesenseClient typesenseClient) 
+                               : base(logger, firestoreDb, typesenseClient)
         {
             _logger = logger;
             _firestoreDb = firestoreDb;
@@ -35,11 +35,7 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                var search = _typesenseClient.Search<CarBrandView>(CollectionName, query)
-                    .Result;
-
-                return search.Hits.Select(hit => hit.Document)
-                    .ToList();
+                return Search<CarBrandView>(CollectionName, query);
             }
             catch (Exception exception)
             {
@@ -67,13 +63,11 @@ namespace WorkShopUI.Services
                     Tenant = GetTenant()
                 };
 
-                AddToFireStore<CarBrand>(CollectionName, id, model);
-
                 var view = CarBrandTransformer.ToView(model);
                 view.Id = id;
 
-                _typesenseClient.UpsertDocument<CarBrandView>(CollectionName, view)
-                    .Wait();
+                AddToFireStore<CarBrand>(CollectionName, id, model);
+                UpdateSearchIndex<CarBrandView>(CollectionName, view);
 
                 return view;
             }
@@ -124,10 +118,7 @@ namespace WorkShopUI.Services
                     };
 
                     AddToFireStore<CarBrand>(CollectionName, view.Id, model);
-
-                    _logger.LogInformation("Update document index for id: {0}", view.Id);
-                    _typesenseClient.UpsertDocument<CarBrandView>(CollectionName, view)
-                        .Wait();
+                    UpdateSearchIndex<CarBrandView>(CollectionName, view);
                 }
 
                 return view;

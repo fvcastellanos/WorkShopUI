@@ -1,19 +1,17 @@
 using Google.Cloud.Firestore;
 using LanguageExt;
 using Typesense;
-using WorkShopUI.Clients;
 using WorkShopUI.Clients.Domain;
 using WorkShopUI.Domain;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services
 {
-    public class CarLineService
+    public class CarLineService : ServiceBase
     {
         private const string CollectionName = "car-lines";
 
         private readonly ILogger _logger;
-        private readonly CarLineClient _carLineClient;
 
         private readonly FirestoreDb _firestoreDb;
 
@@ -21,11 +19,10 @@ namespace WorkShopUI.Services
 
 
         public CarLineService(ILogger<CarLineService> logger, 
-                              CarLineClient carLineClient,
                               FirestoreDb firestoreDb,
                               ITypesenseClient typesenseClient)
+                              : base(logger, firestoreDb, typesenseClient)
         {
-            _carLineClient = carLineClient;
             _logger = logger;
             _firestoreDb = firestoreDb;
             _typesenseClient = typesenseClient;
@@ -40,11 +37,7 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                var search = _typesenseClient.Search<CarLineView>(CollectionName, query)
-                    .Result;
-
-                return search.Hits.Select(hit => hit.Document)
-                    .ToList();
+                return Search<CarLineView>(CollectionName, query);
             }
             catch (Exception exception)
             {
