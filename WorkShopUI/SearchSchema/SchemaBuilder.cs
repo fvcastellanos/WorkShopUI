@@ -9,17 +9,19 @@ namespace WorkShopUI.SearchSchema
 
         private readonly ITypesenseClient _typesenseClient;
 
+        public IEnumerable<SchemaDefinition> SchemaDefinitions { get; }
+
         public SchemaBuilder(ILogger<SchemaBuilder> logger,
                              ITypesenseClient typesenseClient)
         {
             _logger = logger;
             _typesenseClient = typesenseClient;
+            SchemaDefinitions = buildSchemaDefinition();
         }
 
         public void BuildSchema()
         {
-            var schemaDefinitions = buildSchemaDefinition();
-            buildSchema(schemaDefinitions);
+            buildSchema(SchemaDefinitions);
         }
 
         // ------------------------------------------------------------------------------------------

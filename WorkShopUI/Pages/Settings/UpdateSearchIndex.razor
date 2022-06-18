@@ -1,0 +1,49 @@
+@inherits UpdateSearchIndexBase
+
+@page "/update-search-indexes"
+
+<div class="container-fluid">
+
+    <div class="row justify-content-center">
+
+        <div class="col-1"></div>
+        <div class="col">
+            <h2>Actualizar Indices de Búsqueda</h2>
+            <p>
+                Este proceso sincroniza la información contenida en la base de datos con el motor de búsquedas. 
+            </p>
+
+            <input type="button" class="btn btn-primary" value="Actualizar índices" @onclick="ShowModal" />
+
+            @if (DisplayModal)
+            {
+                <div class="modal" tabindex="-1" role="dialog" style="display: block">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Advertencia</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideModal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    Dependiendo del tamaño de la base de datos, esto puede tomar mucho tiempo, 
+                                    es recomendable ejecutar este proceso únicamente si es necesario y en períodos
+                                    de poca carga al sistema.
+                                </p>
+
+                                <input type="submit" class="btn btn-warning" value="Proceder" @onclick="UpdateSearchIndexes" />
+                                <input type="button" class="btn btn-secondary" value="Cancelar" @onclick="HideModal"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            }
+
+        </div>
+        <div class="col-1"></div>
+
+    </div>
+
+</div>
