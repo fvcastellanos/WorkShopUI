@@ -18,7 +18,7 @@ namespace WorkShopUI.Pages
         protected IEnumerable<CarBrandView> CarBrands;
         protected CarBrandView CarBrandView;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             SearchView = new SearchView
             {
@@ -29,15 +29,15 @@ namespace WorkShopUI.Pages
             };
 
             HideAddModal();
-            Search();
+            await SearchAsync();
         }
 
-        protected override void Search()
+        protected override async Task SearchAsync()
         {
             CarBrands = new List<CarBrandView>();
             HideErrorMessage();
 
-            var result = Service.Search(SearchView);
+            var result = await Service.SearchAsync(SearchView);
             result.Match(right => {
 
                 CarBrands = right;
@@ -46,10 +46,10 @@ namespace WorkShopUI.Pages
 
         }
         
-        protected override void DisplayPage(int pageNumber)
+        protected override async Task DisplayPageAsync(int pageNumber)
         {
             SearchView.Page = pageNumber;
-            Search();
+            await SearchAsync();
             StateHasChanged();
         }
         protected void ShowAddModal()
@@ -66,9 +66,9 @@ namespace WorkShopUI.Pages
             ShowModal();
         }
 
-        protected void GetBrand(string id)
+        protected async Task GetBrandAsync(string id)
         {
-            var holder = Service.FindById(id);
+            var holder = await Service.FindByIdAsync(id);
 
             holder.Match(ShowEditModal,
                 () => ShowErrorMessage($"No se encontro informacion del fabricante con id: {id}"));
@@ -79,25 +79,25 @@ namespace WorkShopUI.Pages
             NavigationManager.NavigateTo($"/car-brands/{id}/lines?CarBrandName={name}");
         }
 
-        protected override void Update()
+        protected override async Task UpdateAsync()
         {
-            var result = Service.Update(CarBrandView);
+            var result = await Service.UpdateAsync(CarBrandView);
 
-            result.Match(right => {
+            result.Match(async right => {
 
                 HideAddModal();
-                Search();
+                await SearchAsync();
             }, DisplayModalError);
         }
 
-        protected override void Add()
+        protected override async Task AddAsync()
         {
-            var result = Service.Add(CarBrandView);
+            var result = await Service.AddAsync(CarBrandView);
 
-            result.Match(right => {
+            result.Match(async right => {
 
                 HideAddModal();
-                Search();
+                await SearchAsync();
             }, DisplayModalError);
         }
 

@@ -27,7 +27,7 @@ namespace WorkShopUI.Services
             _firestoreDb = firestoreDb;
         }
 
-        public Either<string, IEnumerable<ContactView>> Search(ContactSearchView searchView) {
+        public async Task<Either<string, IEnumerable<ContactView>>> SearchAsync(ContactSearchView searchView) {
 
             try {
                 var query = new SearchParameters(searchView.Text, "code, name");
@@ -35,7 +35,7 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                return Search<ContactView>(CollectionName, query);
+                return await SearchAsync<ContactView>(CollectionName, query);
             }
             catch (Exception exception) 
             {
@@ -44,11 +44,11 @@ namespace WorkShopUI.Services
             }            
         }
 
-        public Either<string, ContactView> Add(ContactView contactView)
+        public async Task<Either<string, ContactView>> AddAsync(ContactView contactView)
         {
             try
             {
-                if (findByCode(contactView.Code) != null)
+                if (await findByCodeAsync(contactView.Code) != null)
                 {
                     _logger.LogError("Code: {0} already exists for tenant: {1}", contactView.Code, GetTenant());
                     return $"El código: {contactView.Code} ya existe";
@@ -69,9 +69,10 @@ namespace WorkShopUI.Services
                 };
 
                 contactView.Id = id;
+                contactView.Tenant = model.Tenant;
 
-                AddToFireStore<Contact>(CollectionName, id, model);
-                UpdateSearchIndex<ContactView>(CollectionName, contactView);
+                await AddToFireStoreAsync<Contact>(CollectionName, id, model);
+                await UpdateSearchIndexAsync<ContactView>(CollectionName, contactView);
 
                 return contactView;
             }
@@ -82,11 +83,11 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Option<ContactView> FindById(string id)
+        public async Task<Option<ContactView>> FindByIdAsync(string id)
         {
             try
             {
-                var snapshot = FindById(CollectionName, id);
+                var snapshot = await FindByIdAsync(CollectionName, id);
 
                 if (snapshot.Exists)
                 {
@@ -104,14 +105,13 @@ namespace WorkShopUI.Services
             }
         }
 
-        private Contact findByCode(string code)
+        private async Task<Contact> findByCodeAsync(string code)
         {
             var reference = FirestoreDb.Collection(CollectionName);
             var query = reference.WhereEqualTo("code", code)
                 .WhereEqualTo("tenant", GetTenant());
                 
-            var snapshot = query.GetSnapshotAsync()
-                .Result;
+            var snapshot = await query.GetSnapshotAsync();
 
             var contact = snapshot.FirstOrDefault();
 

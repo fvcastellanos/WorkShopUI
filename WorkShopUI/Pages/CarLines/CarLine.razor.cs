@@ -21,7 +21,7 @@ namespace WorkShopUI.Pages
         protected IEnumerable<CarLineView> CarLines;
         protected CarLineView CarLineView;
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             SearchView = new SearchView
             {
@@ -32,15 +32,15 @@ namespace WorkShopUI.Pages
             };
 
             HideAddModal();
-            Search();
+            await SearchAsync();
         }
 
-        protected override void Search()
+        protected override async Task SearchAsync()
         {
             CarLines = new List<CarLineView>();
             HideErrorMessage();
 
-            var result = Service.Search(CarBrandId, SearchView);
+            var result = await Service.SearchAsync(CarBrandId, SearchView);
 
             result.Match(right => {
 
@@ -50,31 +50,31 @@ namespace WorkShopUI.Pages
 
         }
 
-        protected override void Add()
+        protected override async Task AddAsync()
         {
-            var result = Service.Add(CarLineView);
+            var result = await Service.AddAsync(CarLineView);
 
-            result.Match(right => {
+            result.Match(async right => {
 
                 HideAddModal();
-                Search();
+                await SearchAsync();
             }, DisplayModalError);
         }
 
-        protected override void Update()
+        protected override async Task UpdateAsync()
         {
-            var result = Service.Update(CarLineView);
+            var result = await Service.UpdateAsync(CarLineView);
 
-            result.Match(right => {
+            result.Match(async right => {
 
                 HideAddModal();
-                Search();
+                await SearchAsync();
             }, DisplayModalError);
         }
 
-        protected void GetCarLine(string id)
+        protected async Task GetCarLineAsync(string id)
         {
-            var holder = Service.FindById(id);
+            var holder = await Service.FindByIdAsync(id);
 
             holder.Match(ShowEditModal, 
                 () => ShowErrorMessage("No se pudo obtener la línea de vehículo"));
@@ -95,10 +95,10 @@ namespace WorkShopUI.Pages
             ShowModal();
         }
 
-        protected override void DisplayPage(int pageNumber)
+        protected override async Task DisplayPageAsync(int pageNumber)
         {
             SearchView.Page = pageNumber;
-            Search();
+            await SearchAsync();
             StateHasChanged();
         }
 

@@ -28,7 +28,7 @@ namespace WorkShopUI.Services
             _typesenseClient = typesenseClient;
         }
 
-        public Either<string, IEnumerable<CarLineView>> Search(string carBrandId, SearchView searchView)
+        public async Task<Either<string, IEnumerable<CarLineView>>> SearchAsync(string carBrandId, SearchView searchView)
         {           
             try
             {
@@ -37,7 +37,7 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                return Search<CarLineView>(CollectionName, query);
+                return await SearchAsync<CarLineView>(CollectionName, query);
             }
             catch (Exception exception)
             {
@@ -46,24 +46,27 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Either<string, CarLineView> Add(CarLineView carLineView)
+        public async Task<Either<string, CarLineView>> AddAsync(CarLineView carLineView)
         {
             try
             {
                 var id = Guid.NewGuid()
                     .ToString();
 
-                var model = CarLineTransformer.ToModel(carLineView);
+                var model = new CarLine
+                {
+                    Name = carLineView.Name,
+                    Description = carLineView.Description,
+                    CarBrandId = carLineView.CarBrandId,
+                    Active = "ACTIVE",
+                    Tenant = GetTenant()
+                };
 
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(id);
-
-               docRef.SetAsync(model)
-                    .Wait();
-                
                 carLineView.Id = id;
-                _typesenseClient.UpsertDocument<CarLineView>(CollectionName, carLineView)
-                    .Wait();
+                carLineView.Tenant = model.Tenant;
+
+                await AddToFireStoreAsync<CarLine>(CollectionName, id, model);
+                await UpdateSearchIndexAsync<CarLineView>(CollectionName, carLineView);
 
                 return carLineView;
             }
@@ -74,15 +77,11 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Option<CarLineView> FindById(string lineId)
+        public async Task<Option<CarLineView>> FindByIdAsync(string lineId)
         {
             try
             {
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(lineId);
-
-                var snapshot = docRef.GetSnapshotAsync()
-                    .Result;
+                var snapshot = await FindByIdAsync(CollectionName, lineId);
 
                 if (snapshot.Exists)
                 {
@@ -99,24 +98,25 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Either<string, CarLineView> Update(CarLineView carLineView)
+        public async Task<Either<string, CarLineView>> UpdateAsync(CarLineView carLineView)
         {
             try
             {
-                var docRef = _firestoreDb.Collection(CollectionName)
-                    .Document(carLineView.Id);
-
-                var snapshot = docRef.GetSnapshotAsync()
-                    .Result;
+                var snapshot = await FindByIdAsync(CollectionName, carLineView.Id);
 
                 if (snapshot.Exists)
                 {
-                    var model = CarLineTransformer.ToModel(carLineView);
-                    docRef.SetAsync(model)
-                        .Wait();
+                    _logger.LogInformation($"Update Car Line with id: {carLineView.Id}");
 
-                    _typesenseClient.UpsertDocument<CarLineView>(CollectionName, carLineView)
-                        .Wait();
+                    var model = new CarLine
+                    {
+                        Name = carLineView.Name,
+                        Description = carLineView.Description,
+                        Active = carLineView.Active
+                    };
+
+                    await AddToFireStoreAsync<CarLine>(CollectionName, carLineView.Id, model);
+                    await UpdateSearchIndexAsync<CarLineView>(CollectionName, carLineView);
                 }
 
                 return carLineView;

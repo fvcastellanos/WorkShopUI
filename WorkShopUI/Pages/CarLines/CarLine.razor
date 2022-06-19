@@ -56,7 +56,7 @@
                                 <div class="col">
                                 </div>
                             </div>
-                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
+                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="SearchAsync" />
                             <input type="button" class="btn btn-primary" value="Agregar Línea" @onclick="ShowAddModal" />
                         </fieldset>
                     </div>
@@ -81,7 +81,7 @@
                         {
                             <tr>
                                 <td>
-                                    <div @onclick="() => GetCarLine(line.Id)" class="crud-icon"> 
+                                    <div @onclick="() => GetCarLineAsync(line.Id)" class="crud-icon"> 
                                         <span class="oi oi-brush" aria-hidden="true"></span>
                                     </div>
                                 </td>
@@ -115,7 +115,7 @@
 
                                 <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
 
-                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
+                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChangesAsync">
                                     <DataAnnotationsValidator/>
                                     <ValidationSummary/>
                                     <div class="form-group">

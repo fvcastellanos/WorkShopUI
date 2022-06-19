@@ -48,14 +48,14 @@ namespace WorkShopUI.Pages
             ModifyModal = true;
         }
 
-        protected abstract void Update();
-        protected abstract void Add();
+        protected abstract Task UpdateAsync();
+        protected abstract Task AddAsync();
 
-        protected abstract void Search();
+        protected abstract Task SearchAsync();
 
-        protected abstract void DisplayPage(int pageNumber);
+        protected abstract Task DisplayPageAsync(int pageNumber);
 
-        protected void SaveChanges()
+        protected async Task SaveChangesAsync()
         {
             if (!EditContext.Validate())
             {
@@ -64,12 +64,12 @@ namespace WorkShopUI.Pages
 
             if (ModifyModal)
             {
-                Update();
+                await UpdateAsync();
                 
                 return;
             }
 
-            Add();
+            await AddAsync();
         }        
     }
 }

@@ -46,7 +46,7 @@
                                 <div class="col">
                                 </div>
                             </div>
-                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
+                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="SearchAsync" />
                             <input type="button" class="btn btn-primary" value="Agregar Fabricante" @onclick="ShowAddModal" />
                         </fieldset>
                     </div>
@@ -71,7 +71,7 @@
                         {
                             <tr>
                                 <td>
-                                    <div @onclick="() => GetBrand(brand.Id)" class="crud-icon"> 
+                                    <div @onclick="() => GetBrandAsync(brand.Id)" class="crud-icon"> 
                                         <span class="oi oi-brush" aria-hidden="true"></span>
                                     </div>
                                     <div @onclick="() => GetLines(brand.Id, brand.Name)" class="crud-icon">
@@ -108,7 +108,7 @@
 
                                 <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
 
-                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
+                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChangesAsync">
                                     <DataAnnotationsValidator/>
                                     <ValidationSummary/>
                                     <div class="form-group">

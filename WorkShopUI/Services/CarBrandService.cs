@@ -26,7 +26,7 @@ namespace WorkShopUI.Services
             _typesenseClient = typesenseClient;
         }
 
-        public Either<string, IEnumerable<CarBrandView>> Search(SearchView searchView)
+        public async Task<Either<string, IEnumerable<CarBrandView>>> SearchAsync(SearchView searchView)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace WorkShopUI.Services
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
-                return Search<CarBrandView>(CollectionName, query);
+                return await SearchAsync<CarBrandView>(CollectionName, query);
             }
             catch (Exception exception)
             {
@@ -44,11 +44,11 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Either<string, CarBrandView> Add(CarBrandView carBrandView)
+        public async Task<Either<string, CarBrandView>> AddAsync(CarBrandView carBrandView)
         {
             try
             {
-                if (findExistingBrand(carBrandView.Name))
+                if (await findExistingBrandAsync(carBrandView.Name))
                 {
                     _logger.LogError("car brand with name={0} already exists", carBrandView.Name);
                     return $"Ya existe una marca {carBrandView.Name}";
@@ -66,8 +66,8 @@ namespace WorkShopUI.Services
                 var view = CarBrandTransformer.ToView(model);
                 view.Id = id;
 
-                AddToFireStore<CarBrand>(CollectionName, id, model);
-                UpdateSearchIndex<CarBrandView>(CollectionName, view);
+                await AddToFireStoreAsync<CarBrand>(CollectionName, id, model);
+                await UpdateSearchIndexAsync<CarBrandView>(CollectionName, view);
 
                 return view;
             }
@@ -78,11 +78,11 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Option<CarBrandView> FindById(string id)
+        public async Task<Option<CarBrandView>> FindByIdAsync(string id)
         {
             try
             {
-                var snapshot = FindById(CollectionName, id);
+                var snapshot = await FindByIdAsync(CollectionName, id);
                 
                 if (snapshot.Exists)
                 {
@@ -100,11 +100,11 @@ namespace WorkShopUI.Services
             }
         }
 
-        public Either<string, CarBrandView> Update(CarBrandView view)
+        public async Task<Either<string, CarBrandView>> UpdateAsync(CarBrandView view)
         {
             try
             {
-                var snapshot = FindById(CollectionName, view.Id);
+                var snapshot = await FindByIdAsync(CollectionName, view.Id);
 
                 if (snapshot.Exists)
                 {
@@ -117,8 +117,8 @@ namespace WorkShopUI.Services
                         Tenant = GetTenant()
                     };
 
-                    AddToFireStore<CarBrand>(CollectionName, view.Id, model);
-                    UpdateSearchIndex<CarBrandView>(CollectionName, view);
+                    await AddToFireStoreAsync<CarBrand>(CollectionName, view.Id, model);
+                    await UpdateSearchIndexAsync<CarBrandView>(CollectionName, view);
                 }
 
                 return view;
@@ -132,14 +132,13 @@ namespace WorkShopUI.Services
 
         // -----------------------------------------------------------------------------------------------
 
-        private bool findExistingBrand(string name)
+        private async Task<bool> findExistingBrandAsync(string name)
         {
             var query = new SearchParameters(name, "name");
             query.FilterBy = $"name:{name}";
 
-            var search = _typesenseClient.Search<CarBrand>(CollectionName, query)
-                .Result;
-
+            var search = await _typesenseClient.Search<CarBrand>(CollectionName, query);
+            
             return search.Found > 0;
         }
     }

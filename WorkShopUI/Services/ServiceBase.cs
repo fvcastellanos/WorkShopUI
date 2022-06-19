@@ -34,39 +34,36 @@ namespace WorkShopUI.Services
                 .ToString();
         }
 
-        protected Either<string, IEnumerable<T>> Search<T>(string collection, SearchParameters searchParameters)
+        protected async Task<Either<string, IEnumerable<T>>> SearchAsync<T>(string collection, SearchParameters searchParameters)
         {
-            var search = TypesenseClient.Search<T>(collection, searchParameters)
-                .Result;
+            var search = await TypesenseClient.Search<T>(collection, searchParameters);
 
             return search.Hits.Select(hit => hit.Document)
                 .ToList();            
         }
 
-        protected void AddToFireStore<T>(string collection, string id, T model)
+        protected async Task AddToFireStoreAsync<T>(string collection, string id, T model)
         {
             _logger.LogInformation("Store into firestore collection: {0} with id: {1}", collection, id);
             var docRef = FirestoreDb.Collection(collection)
                 .Document(id);
             
-            docRef.SetAsync(model)
-                .Wait();
+            await docRef.SetAsync(model);
         }
 
-        protected void UpdateSearchIndex<T>(string collection, T indexObject) where T : class
+        protected async Task UpdateSearchIndexAsync<T>(string collection, T indexObject) where T : class
         {
             _logger.LogInformation("Update search index for collection: {0}", collection);
-            TypesenseClient.UpsertDocument<T>(collection, indexObject);
+            await TypesenseClient.UpsertDocument<T>(collection, indexObject);
         }
 
 
-        protected DocumentSnapshot FindById(string collection, string id)
+        protected async Task<DocumentSnapshot> FindByIdAsync(string collection, string id)
         {
             var docRef = FirestoreDb.Collection(collection)
                 .Document(id);
 
-            return docRef.GetSnapshotAsync()
-                .Result;
+            return await docRef.GetSnapshotAsync();
         }
     }
 }

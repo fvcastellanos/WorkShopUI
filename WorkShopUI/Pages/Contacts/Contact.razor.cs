@@ -1,5 +1,3 @@
-
-
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
@@ -9,10 +7,7 @@ namespace WorkShopUI.Pages
 {
     public class ContactBase : CrudBase
     {
-
         protected ContactSearchView SearchView;
-
-        protected PagedView<ContactView> SearchResponse;
 
         protected IEnumerable<ContactView> Contacts;
 
@@ -21,7 +16,7 @@ namespace WorkShopUI.Pages
         [Inject]
         protected ContactService ContactService { get; set; }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
             SearchView = new ContactSearchView
             {
@@ -34,46 +29,46 @@ namespace WorkShopUI.Pages
             };
 
             HideAddModal();
-            Search();
+            await SearchAsync();
         }
 
-        protected override void Add()
+        protected override async Task AddAsync()
         {
-            var result = ContactService.Add(ContactView);
+            var result = await ContactService.AddAsync(ContactView);
 
-            result.Match(right => {
+            result.Match(async right => {
                 
                 HideAddModal();
-                Search();
+                await SearchAsync();
             }, DisplayModalError);
         }
 
-        protected override void DisplayPage(int pageNumber)
+        protected override async Task DisplayPageAsync(int pageNumber)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Search()
+        protected override async Task SearchAsync()
         {
             Contacts = new List<ContactView>();
 
             HideErrorMessage();
 
-            var result = ContactService.Search(SearchView);
+            var result = await ContactService.SearchAsync(SearchView);
 
             result.Match(right => {
                 Contacts = right;
             }, ShowErrorMessage);
         }
 
-        protected override void Update()
+        protected override async Task UpdateAsync()
         {
             throw new NotImplementedException();
         }
 
-        protected void GetContact(string id)
+        protected async Task GetContact(string id)
         {
-            var holder = ContactService.FindById(id);
+            var holder = await ContactService.FindByIdAsync(id);
 
             
         }
