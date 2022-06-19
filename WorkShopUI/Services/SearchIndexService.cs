@@ -11,79 +11,64 @@ namespace WorkShopUI.Services
     public class SearchIndexService
     {
         private readonly ILogger _logger;
-        private readonly ITypesenseClient _typesenseClient;
 
         private readonly FirestoreDb _firestoreDb;
 
         private readonly SchemaBuilder _schemaBuilder;
 
-        public SearchIndexService(ILogger logger,
-                                  ITypesenseClient typesenseClient,
+        private readonly IndexUpdateProvider _indexUpdateProvider;
+
+        public SearchIndexService(ILogger<SearchIndexService> logger,
                                   FirestoreDb firestoreDb,
-                                  SchemaBuilder schemaBuilder)
+                                  SchemaBuilder schemaBuilder,
+                                  IndexUpdateProvider indexUpdateProvider)
         {
             _logger = logger;
-            _typesenseClient = typesenseClient;
             _firestoreDb = firestoreDb;
             _schemaBuilder = schemaBuilder;
+            _indexUpdateProvider = indexUpdateProvider;
         }
 
         public async Task UpdateSearchIndexes()
         {
+            _logger.LogInformation("Updating searc indexes");
             var schemaDefinitions = _schemaBuilder.SchemaDefinitions
                 .ToList();
 
-            schemaDefinitions.ForEach(schemaDefinition => {
-
-            });
-
-            // _firestoreDb.
+            foreach(var schemaDefinition in schemaDefinitions)
+            {
+                await updateSearchIndex(schemaDefinition);
+            }
         }
 
-        private async Task UpdateSearchIndex(SchemaDefinition schemaDefinition)
+        private async Task updateSearchIndex(SchemaDefinition schemaDefinition)
         {
             var schemaName = schemaDefinition.Name;
 
             var snapshots = await _firestoreDb.Collection(schemaName)
                 .GetSnapshotAsync();
-            //     .StreamAsync();
 
             foreach (var snapshot in snapshots)
             {
-                // UpsertDocument
+                try 
+                {
+                    var indexUpdate = _indexUpdateProvider.GetSearchIndexUpdate(schemaName);
 
-                // var type = getDocumentType(schemaName);
-                // snapshot.ConvertTo<Type>();
+                    if (indexUpdate != null)
+                    {
+                        _logger.LogInformation($"Updating search index for schema: {schemaName}");
+                        await indexUpdate.UpdateIndexAsync(schemaName, snapshot);
+
+                        return;
+                    }
+
+                    _logger.LogWarning($"Search Index Updater not found for schema: {schemaName}");
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, $"Unable to update search index for collection: {schemaName}");
+                }
             }
         }
-
-        private async Task processDocument(string collection, DocumentSnapshot snapshot)
-        {
-            // var foo = 
-            // collection switch
-            // {
-            //     "car-brands" => await upsertDocument<CarBrand, CarBrandView>(collection, snapshot),
-            //     _ => throw new Exception("Document not recognized")
-            // };
-        }
-
-        private async Task upsertDocument<T, R>(string collection, DocumentSnapshot snapshot) where R : class
-        {
-            var model = snapshot.ConvertTo<T>();
-
-            var view = (R) toView(collection, model);
-
-            await _typesenseClient.UpsertDocument<R>(collection, view);
-        }
-
-        private object toView(string collection, object model)
-        {
-            return collection switch
-            {
-                "car-brands" => CarBrandTransformer.ToView((CarBrand) model),
-                _ => throw new Exception("Document not recognized")
-            };
-        }
-
     }
 }

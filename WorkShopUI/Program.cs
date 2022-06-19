@@ -54,9 +54,13 @@ builder.Services.AddTypesenseClient(config => {
 builder.Services.AddSingleton<SchemaBuilder>();
 
 // HTTP Clients
-builder.Services.AddScoped<CarBrandClient>();
-builder.Services.AddScoped<CarLineClient>();
-builder.Services.AddScoped<ContactClient>();
+// builder.Services.AddScoped<CarBrandClient>();
+// builder.Services.AddScoped<CarLineClient>();
+// builder.Services.AddScoped<ContactClient>();
+
+// Search index
+builder.Services.AddSingleton<IndexUpdateProvider>();
+builder.Services.AddSingleton<SearchIndexService>();
 
 // Services
 builder.Services.AddSingleton<WeatherForecastService>();

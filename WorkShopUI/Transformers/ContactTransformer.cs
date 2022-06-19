@@ -9,7 +9,6 @@ namespace WorkShopUI.Transformers
         {
             return new ContactView
             {
-                // Id = GetId(contact),
                 Id = contact.Id,
                 Code = contact.Code,
                 Description = contact.Description,
@@ -17,7 +16,8 @@ namespace WorkShopUI.Transformers
                 Contact = contact.ContactName,
                 TaxId = contact.TaxId,
                 Active = contact.Active,
-                Type = contact.Type
+                Type = contact.Type,
+                Tenant = contact.Tenant
             };
         }
 

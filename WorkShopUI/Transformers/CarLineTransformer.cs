@@ -13,7 +13,8 @@ namespace WorkShopUI.Transformers
                 CarBrandId = carLine.CarBrandId,
                 Name = carLine.Name,
                 Description = carLine.Description,
-                Active = carLine.Active
+                Active = carLine.Active,
+                Tenant = carLine.Tenant
             };
         }
 

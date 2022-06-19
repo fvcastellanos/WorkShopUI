@@ -1,8 +1,14 @@
+using Microsoft.AspNetCore.Components;
+using WorkShopUI.Services;
+
 namespace WorkShopUI.Pages
 {
     public class UpdateSearchIndexBase : PageBase
     {
         protected bool DisplayModal;
+
+        [Inject]
+        protected SearchIndexService SearchIndexService { get; set; }
 
         protected override void OnInitialized()
         {
@@ -19,9 +25,10 @@ namespace WorkShopUI.Pages
             DisplayModal = true;
         }
 
-        protected void UpdateSearchIndexes()
+        protected async void UpdateSearchIndexes()
         {
-            
+            HideModal();
+            await SearchIndexService.UpdateSearchIndexes();
         }
     }
 }
