@@ -1,8 +1,8 @@
 using Google.Cloud.Firestore;
 using LanguageExt;
 using Typesense;
-using WorkShopUI.Clients.Domain;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Model;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services

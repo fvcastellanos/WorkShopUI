@@ -1,9 +1,9 @@
-using WorkShopUI.Clients.Domain;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Model;
+using WorkShopUI.Domain.Views;
 
 namespace WorkShopUI.Transformers
 {
-    public class ContactTransformer : BaseTransformer
+    public class ContactTransformer
     {
         public static ContactView ToView(Contact contact)
         {
@@ -18,20 +18,6 @@ namespace WorkShopUI.Transformers
                 Active = contact.Active,
                 Type = contact.Type,
                 Tenant = contact.Tenant
-            };
-        }
-
-        public static Contact ToModel(ContactView contactView)
-        {
-            return new Contact
-            {
-                Code = contactView.Code,
-                Name = contactView.Name,
-                ContactName = contactView.Contact,
-                Description = contactView.Description,
-                TaxId = contactView.TaxId,
-                Type = contactView.Type,
-                Active = contactView.Active
             };
         }
     }

@@ -1,7 +1,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
 namespace WorkShopUI.Pages
@@ -14,7 +14,6 @@ namespace WorkShopUI.Pages
         [Inject]
         protected NavigationManager NavigationManager { get; set; }
 
-        protected PagedView<CarBrandView> SearchResponse;
         protected SearchView SearchView;
         protected IEnumerable<CarBrandView> CarBrands;
         protected CarBrandView CarBrandView;

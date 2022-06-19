@@ -1,9 +1,9 @@
-using WorkShopUI.Clients.Domain;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Model;
+using WorkShopUI.Domain.Views;
 
 namespace WorkShopUI.Transformers
 {
-    public class CarBrandTransformer : BaseTransformer
+    public class CarBrandTransformer
     {
         public static CarBrandView ToView(CarBrand carBrand)
         {

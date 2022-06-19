@@ -1,8 +1,7 @@
 
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
-namespace WorkShopUI.Domain
+namespace WorkShopUI.Domain.Views
 {
     public class CarBrandView
     {

@@ -1,9 +1,9 @@
-using WorkShopUI.Clients.Domain;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Model;
+using WorkShopUI.Domain.Views;
 
 namespace WorkShopUI.Transformers
 {
-    public class CarLineTransformer : BaseTransformer
+    public class CarLineTransformer
     {
         public static CarLineView ToView(CarLine carLine)
         {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace WorkShopUI.Domain
+namespace WorkShopUI.Domain.Views
 {
 
     public class ContactView
