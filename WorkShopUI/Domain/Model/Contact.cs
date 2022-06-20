@@ -6,9 +6,6 @@ namespace WorkShopUI.Domain.Model
     [FirestoreData]
     public class Contact : BaseModel
     {
-        // [FirestoreDocumentId]
-        // public string Id { get; set; }
-
         [FirestoreProperty("name")]
         public string Name { get; set; }
 
@@ -29,8 +26,5 @@ namespace WorkShopUI.Domain.Model
 
         [FirestoreProperty("active")]
         public string Active { get; set; }
-
-        // [FirestoreProperty("tenant")]
-        // public string Tenant { get; set; }
     }
 }

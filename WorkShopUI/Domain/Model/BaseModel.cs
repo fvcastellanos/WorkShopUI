@@ -7,7 +7,7 @@ namespace WorkShopUI.Domain.Model
         [FirestoreDocumentId]
         public string Id { get; set; }
 
-        [FirestoreProperty]
+        [FirestoreProperty("tenant")]
         public string Tenant { get; set; }
     }
 }

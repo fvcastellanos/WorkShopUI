@@ -105,6 +105,50 @@ namespace WorkShopUI.Services
             }
         }
 
+        public async Task<Either<string, ContactView>> UpdateAsync(ContactView contactView)
+        {
+            try
+            {
+                var snapshot = await FindByIdAsync(CollectionName, contactView.Id);
+
+                if (!snapshot.Exists)
+                {
+                    _logger.LogError($"Contact Id: {contactView.Id} not found for tenant: {contactView.Tenant}");
+                    return $"No se encontro el Contacto con Id: {contactView.Id}";
+                }
+
+                var contact = snapshot.ConvertTo<Contact>();
+
+                if (!contactView.Id.Equals(contact.Id))
+                {
+                    var existingContact = await findByCodeAsync(contactView.Code);
+                    
+                    if ((existingContact != null) && (existingContact.Id != contact.Id))
+                    {
+                        _logger.LogError($"Code: {contactView.Code} is already used by other contact for tenant: {contactView.Tenant}");
+                        return $"El codigo: {contact.Code} ya se encuentra en uso";
+                    }
+                }
+
+                contact.Name = contactView.Name;
+                contact.Description = contactView.Description;
+                contact.Code = contactView.Code;
+                contact.ContactName = contactView.Contact;
+                contact.TaxId = contactView.TaxId;
+                contact.Active = contactView.Active;
+
+                await AddToFireStoreAsync<Contact>(CollectionName, contactView.Id, contact);
+                await UpdateSearchIndexAsync<ContactView>(CollectionName, contactView);
+
+                return contactView;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Unable to update Contact with id: {contactView.Id} and tenant: {contactView.Tenant}");
+                return $"No es posible actualizar el Contacto de: {contactView.Name}";
+            }
+        }
+
         private async Task<Contact> findByCodeAsync(string code)
         {
             var reference = FirestoreDb.Collection(CollectionName);

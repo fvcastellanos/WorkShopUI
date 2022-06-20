@@ -63,14 +63,21 @@ namespace WorkShopUI.Pages
 
         protected override async Task UpdateAsync()
         {
-            throw new NotImplementedException();
+            var result = await ContactService.UpdateAsync(ContactView);
+
+            result.Match(async right => {
+
+                HideAddModal();
+                await SearchAsync();
+            }, DisplayModalError);
         }
 
         protected async Task GetContact(string id)
         {
             var holder = await ContactService.FindByIdAsync(id);
 
-            
+            holder.Match(ShowEditModal, 
+                () => ShowErrorMessage("No se pudo obtener el contacto"));
         }
 
         protected void ShowAddModal() 
@@ -86,6 +93,16 @@ namespace WorkShopUI.Pages
 
             HideModalError();
             ShowModal();
+        }
+
+        // ------------------------------------------------------------------------------------
+
+        private void ShowEditModal(ContactView contactView)
+        {
+            ContactView = contactView;
+            EditContext = new EditContext(ContactView);
+
+            ShowEditModal();            
         }
     }
 }
