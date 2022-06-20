@@ -31,7 +31,7 @@ namespace WorkShopUI.Services
 
             try {
                 var query = new SearchParameters(searchView.Text, "code, name");
-                query.FilterBy = $"active:ACTIVE && type:{searchView.Type}";
+                query.FilterBy = $"active:{searchView.Active} && type:{searchView.Type} && tenant: {GetTenant()}";
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 
@@ -119,7 +119,7 @@ namespace WorkShopUI.Services
 
                 var contact = snapshot.ConvertTo<Contact>();
 
-                if (!contactView.Id.Equals(contact.Id))
+                if (!contactView.Code.Equals(contact.Code))
                 {
                     var existingContact = await findByCodeAsync(contactView.Code);
                     

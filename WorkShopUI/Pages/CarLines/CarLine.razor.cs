@@ -27,7 +27,7 @@ namespace WorkShopUI.Pages
             {
                 Page = 0,
                 Size = 25,
-                Active = 1,
+                Active = "ACTIVE",
                 Name = ""
             };
 

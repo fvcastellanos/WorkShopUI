@@ -33,7 +33,7 @@ namespace WorkShopUI.Services
             try
             {
                 var query = new SearchParameters(searchView.Name, "name");
-                query.FilterBy = $"carBrandId:{carBrandId} && active:ACTIVE";
+                query.FilterBy = $"carBrandId:{carBrandId} && active:{searchView.Active} && tenant:{GetTenant()}";
                 query.SortBy = "name:asc";
                 query.LimitHits = searchView.Size.ToString();
 

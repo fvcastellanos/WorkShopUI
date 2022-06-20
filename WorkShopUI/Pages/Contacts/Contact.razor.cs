@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
@@ -22,7 +23,7 @@ namespace WorkShopUI.Pages
             {
                 Page = 0,
                 Size = 25,
-                Active = 1,
+                Active = "ACTIVE",
                 Text = "",
                 Name = "",
                 Type = "CUSTOMER"
@@ -51,12 +52,12 @@ namespace WorkShopUI.Pages
         protected override async Task SearchAsync()
         {
             Contacts = new List<ContactView>();
-
             HideErrorMessage();
 
             var result = await ContactService.SearchAsync(SearchView);
 
             result.Match(right => {
+
                 Contacts = right;
             }, ShowErrorMessage);
         }
@@ -93,6 +94,15 @@ namespace WorkShopUI.Pages
 
             HideModalError();
             ShowModal();
+        }
+
+        protected async Task KeyUpSearchAsync(KeyboardEventArgs eventArgs)
+        {
+            // System.Console.WriteLine(eventArgs.Code);
+            if (eventArgs.Code.Equals("Enter"))
+            {
+                await SearchAsync();
+            }
         }
 
         // ------------------------------------------------------------------------------------

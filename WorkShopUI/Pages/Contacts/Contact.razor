@@ -16,22 +16,7 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label for="searchText">Texto</label>
-                                        <input type="text" class="form-control" id="searchText" placeholder="Nombre o Código" @bind="SearchView.Text">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="searchName">Nombre</label>
-                                        <input type="text" class="form-control" id="searchName" placeholder="Nombre" @bind="SearchView.Name">
-                                    </div>
-                                </div>
-                                <div class="col-5">
-                                    <div class="form-group">
-                                        <label for="searchCode">Código</label>
-                                        <input type="text" class="form-control" id="searchCode" placeholder="Código" @bind="SearchView.Code">
+                                        <input type="text" class="form-control" id="searchText" placeholder="Nombre o Código" @bind="SearchView.Text" @onkeyup="KeyUpSearchAsync">
                                     </div>
                                 </div>
                             </div>
@@ -50,8 +35,8 @@
                                     <div class="form-group">
                                         <label for="searchActive">Activo</label>
                                         <select class="custom-select" id="searchActive" @bind="SearchView.Active">
-                                            <option value="1">Si</option>
-                                            <option value="0">No</option>
+                                            <option value="ACTIVE">Si</option>
+                                            <option value="INACTIVE">No</option>
                                         </select>
                                     </div>
                                 </div>
