@@ -49,7 +49,9 @@ namespace WorkShopUI.Pages
 
         protected override void DisplayPage(int pageNumber)
         {
-            throw new NotImplementedException();
+            SearchView.Page = pageNumber;
+            Search();
+            StateHasChanged();
         }
 
         protected override void Search()

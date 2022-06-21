@@ -31,7 +31,6 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
-
         }
 
         protected override void Search()
