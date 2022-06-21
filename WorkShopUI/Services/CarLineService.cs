@@ -1,6 +1,6 @@
 using LanguageExt;
 using WorkShopUI.Clients;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services
@@ -78,7 +78,6 @@ namespace WorkShopUI.Services
             }
             catch (Exception exception)
             {
-
                 _logger.LogError(exception, "Unable to update car_line_id={0} for brand_id={1}", carLineView.Id, brandId);
                 return "No es posible actualizar la línea del vehículo";
             }

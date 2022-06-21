@@ -1,5 +1,5 @@
 
-namespace WorkShopUI.Domain
+namespace WorkShopUI.Domain.Views
 {
     public class SearchView
     {

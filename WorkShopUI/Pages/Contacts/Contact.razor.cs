@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
 namespace WorkShopUI.Pages
@@ -69,7 +69,14 @@ namespace WorkShopUI.Pages
 
         protected override void Update()
         {
-            throw new NotImplementedException();
+            var result = ContactService.Update(ContactView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+
+            }, DisplayModalError);
         }
 
         protected void GetContact(string id)

@@ -1,6 +1,6 @@
 using LanguageExt;
 using WorkShopUI.Clients;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services

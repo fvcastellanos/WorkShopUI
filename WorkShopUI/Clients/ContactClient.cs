@@ -30,5 +30,12 @@ namespace WorkShopUI.Clients
             var url = $"{ClientConstants.ContactResource}/{id}";
             return FindById<Contact>("", url, "Contact {id} not found");
         }
+
+        public void Update(string id, Contact contact)
+        {
+            var url = $"{ClientConstants.ContactResource}/{id}";
+            var content = CreateStringContent(contact);
+            Update("", url, content, "");
+        }
     }
 }
