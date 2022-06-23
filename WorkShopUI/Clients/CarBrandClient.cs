@@ -1,5 +1,6 @@
 
 using LanguageExt;
+using Microsoft.AspNetCore.Authentication;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -7,15 +8,19 @@ namespace WorkShopUI.Clients
 
     public class CarBrandClient : BaseHttpClient
     {
-        public CarBrandClient(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        private readonly string _bearerToken;
+        public CarBrandClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory)
         {
+            var httpContext = httpContextAccessor.HttpContext;
+            _bearerToken = httpContext.GetTokenAsync("access_token")
+                .Result;
         }
 
         public SearchResponse<CarBrand> Search(int active, string name, int page, int size)
         {
             var url = $"{ClientConstants.CarBrandResource}?active={active}&name={name}&page={page}&size={size}";
 
-            return Find<CarBrand>("", url, "Unable to retrieve search results");
+            return Find<CarBrand>(_bearerToken, url, "Unable to retrieve search results");
         }
 
         public CarBrand Add(CarBrand carBrand) {

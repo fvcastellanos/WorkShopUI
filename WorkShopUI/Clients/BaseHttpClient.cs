@@ -30,8 +30,7 @@ namespace WorkShopUI.Clients
         }
 
         protected void AddAuthenticationHeader(string token) 
-        {
-            
+        {            
             if (HttpClient.DefaultRequestHeaders.Contains(AuthorizationHeaderName))
             {
                 HttpClient.DefaultRequestHeaders.Remove(AuthorizationHeaderName);
@@ -48,7 +47,7 @@ namespace WorkShopUI.Clients
 
         protected SearchResponse<T> Find<T>(string token, string url, string errorMessage)
         {
-            // AddAuthenticationHeader(token);
+            AddAuthenticationHeader(token);
 
             using (var response = HttpClient.GetAsync(url).Result)
             {

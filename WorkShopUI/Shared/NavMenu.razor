@@ -38,7 +38,7 @@
     }
 } *@
 
-@* <AuthorizeView> *@
+<AuthorizeView>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">WorkShop</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,11 +86,14 @@
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle user-wrapper" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                 <span class="oi oi-person" aria-hidden="true"></span>
-                Foo User
-                @* @context.User.Identity.Name *@
+                  @context.User.Identity.Name
               </a>
               <div class="dropdown-menu" style="right: 0; left: unset;">
-                  <NavLink class="nav-link" href="/login?logout">
+                  @* <NavLink class="nav-link" href="/login?logout">
+                    <span class="sr-only"></span>
+                    Cerrar sesión
+                  </NavLink> *@
+                  <NavLink class="nav-link" href="/logout">
                     <span class="sr-only"></span>
                     Cerrar sesión
                   </NavLink>
@@ -100,5 +103,5 @@
     </div>
   </nav>
 
-@* </AuthorizeView> *@
+</AuthorizeView>
 

@@ -1,6 +1,9 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Steeltoe.Extensions.Configuration.Placeholder;
+using WorkShopUI.Authentication;
+using WorkShopUI.Authentication.Domain;
+using WorkShopUI.Authentication.Provider;
 using WorkShopUI.Clients;
 using WorkShopUI.Data;
 using WorkShopUI.Services;
@@ -17,11 +20,33 @@ builder.Logging.AddConsole();
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
 
     var apiUrl = builder.Configuration["WorkShopAPI:BaseURL"];
-    config.BaseAddress = new Uri(apiUrl); // need to use an environment variable
+    config.BaseAddress = new Uri(apiUrl);
+});
 
+// builder.Services.AddHttpClient(AuthenticationConstants.AuthClientName, config => {
+
+//     var apiUrl = builder.Configuration["Auth0:AuthUrl"];
+//     config.BaseAddress = new Uri(apiUrl);
+// });
+
+// Add Authentication
+// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//                 .AddCookie();
+
+builder.Services.AddAuth0WebAppAuthentication(options => {
+
+    options.ResponseType = "code";
+    options.Domain = builder.Configuration["Auth0:Domain"];
+    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
+
+}).WithAccessToken(options => {
+    options.Audience = builder.Configuration["Auth0:Audience"];
+    options.UseRefreshTokens = true;
 });
 
 // HTTP Clients
@@ -29,9 +54,9 @@ builder.Services.AddScoped<CarBrandClient>();
 builder.Services.AddScoped<CarLineClient>();
 builder.Services.AddScoped<ContactClient>();
 builder.Services.AddScoped<ProductClient>();
+// builder.Services.AddScoped<AuthClient>();
 
 // Services
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<CarBrandService>();
 builder.Services.AddScoped<CarLineService>();
 builder.Services.AddScoped<ContactService>();
@@ -55,5 +80,9 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+app.MapControllers();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
