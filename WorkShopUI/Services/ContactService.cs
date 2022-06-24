@@ -17,12 +17,11 @@ namespace WorkShopUI.Services
             _contactClient = contactClient;
         }
 
-        public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) {
-
-            try {
-                
-                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type, 
-                    searchView.Page, searchView.Size);
+        public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) 
+        {
+            try {                
+                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, 
+                    searchView.Type, searchView.Page, searchView.Size);
 
                 return new PagedView<ContactView>
                 {
@@ -79,7 +78,7 @@ namespace WorkShopUI.Services
             try 
             {
                 var contact = ContactTransformer.ToModel(contactView);
-                _contactClient.Update(contactView.Id, contact);
+                _contactClient.UpdateAsync(contactView.Id, contact);
 
                 return contactView;
             }

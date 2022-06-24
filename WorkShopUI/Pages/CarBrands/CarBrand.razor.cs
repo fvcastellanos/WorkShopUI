@@ -31,6 +31,8 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
+
+            base.OnInitialized();
         }
 
         protected override void Search()
@@ -39,6 +41,7 @@ namespace WorkShopUI.Pages
             HideErrorMessage();
 
             var result = Service.Search(SearchView);
+
             result.Match(right => {
 
                 SearchResponse = right;
@@ -53,6 +56,7 @@ namespace WorkShopUI.Pages
             Search();
             StateHasChanged();
         }
+
         protected void ShowAddModal()
         {
             CarBrandView = new CarBrandView()
@@ -94,7 +98,7 @@ namespace WorkShopUI.Pages
         protected override void Add()
         {
             var result = Service.Add(CarBrandView);
-
+            
             result.Match(right => {
 
                 HideAddModal();

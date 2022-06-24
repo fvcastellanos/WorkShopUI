@@ -31,9 +31,14 @@ namespace WorkShopUI.Services
                                 .ToList()
                 };
             }
+            catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, "unable to load car brand list");
+                return httpRequestException.Message;
+            }
             catch (Exception exception)
             {
-                _logger.LogError("can't get product list - {0}", exception.Message);
+                _logger.LogError("unable to load car brand list - {0}", exception.Message);
                 return "No se pueden obtener las marcas de vehiculos";                
             }
         }
@@ -42,9 +47,15 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var model = CarBrandTransformer.ToModel(carBrandView);
-                var carBrand = _carBrandClient.Add(model);
-                return CarBrandTransformer.ToView(carBrand);
+                var model = CarBrandTransformer.ToModel(carBrandView);               
+                _carBrandClient.Add(model);
+
+                return CarBrandTransformer.ToView(model);
+            }
+            catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, "unable to add car brand list");
+                return httpRequestException.Message;
             }
             catch (Exception exception)
             {
@@ -58,8 +69,7 @@ namespace WorkShopUI.Services
             try
             {
                 return _carBrandClient.FindById(id)
-                    .Map(CarBrandTransformer.ToView)
-                    .FirstOrDefault();
+                    .Map(CarBrandTransformer.ToView);
             }
             catch (Exception exception)
             {
@@ -76,6 +86,11 @@ namespace WorkShopUI.Services
                 _carBrandClient.Update(view.Id, model);
 
                 return view;
+            }
+            catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, "unable to upadte brand with name={0}", view.Name);
+                return httpRequestException.Message;
             }
             catch (Exception exception)
             {

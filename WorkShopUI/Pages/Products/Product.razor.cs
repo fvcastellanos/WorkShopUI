@@ -16,7 +16,7 @@ namespace WorkShopUI.Pages
 
         protected ProductView? ProductView;
 
-        protected override Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             SearchView = new SearchView
             {
@@ -29,9 +29,9 @@ namespace WorkShopUI.Pages
             };
 
             Search();
-
-            return base.OnInitializedAsync();
+            // base.OnInitialized();
         }
+
         protected override void Add()
         {
             throw new NotImplementedException();

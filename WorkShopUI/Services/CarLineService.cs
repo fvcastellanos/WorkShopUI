@@ -20,7 +20,8 @@ namespace WorkShopUI.Services
         {           
             try
             {
-                var searchResult = _carLineClient.Search(carBrandId, searchView.Active, searchView.Name, searchView.Page, searchView.Size);
+                var searchResult = _carLineClient.Search(carBrandId, searchView.Active, searchView.Name, 
+                    searchView.Page, searchView.Size);
 
                 return new PagedView<CarLineView>
                 {
@@ -45,6 +46,12 @@ namespace WorkShopUI.Services
                 _carLineClient.Add(brandId, model);
 
                 return carLineView;
+            }
+            catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, "Unable to add a car line");
+                return httpRequestException.Message;
+
             }
             catch (Exception exception)
             {
@@ -75,6 +82,11 @@ namespace WorkShopUI.Services
                 _carLineClient.Update(brandId, carLineView.Id, model);
 
                 return carLineView;
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogError(exception, "Unable to update car_line_id={0} for brand_id={1}", carLineView.Id, brandId);
+                return exception.Message;
             }
             catch (Exception exception)
             {
