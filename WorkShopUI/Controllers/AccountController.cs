@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,19 +31,6 @@ namespace WorkShopUI.Controllers
 
             var token = await HttpContext.GetTokenAsync("access_token");
         }
-
-        // [Authorize]
-        // public IActionResult Profile()
-        // {
-        //     return new View( new {
-                
-        //         Name = User.Identity.Name,
-        //         EmailAddress = User.Claims
-        //             .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-        //         ProfileImage = User.Claims
-        //             .FirstOrDefault(c => c.Type == "picture")?.Value
-        //     });
-        // }
 
         [Authorize]
         [Route("/logout")]

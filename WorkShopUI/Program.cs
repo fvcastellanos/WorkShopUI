@@ -1,11 +1,6 @@
 using Auth0.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using WorkShopUI.Authentication;
-using WorkShopUI.Authentication.Domain;
-using WorkShopUI.Authentication.Provider;
 using WorkShopUI.Clients;
-using WorkShopUI.Data;
 using WorkShopUI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,16 +22,6 @@ builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
     config.BaseAddress = new Uri(apiUrl);
 });
 
-// builder.Services.AddHttpClient(AuthenticationConstants.AuthClientName, config => {
-
-//     var apiUrl = builder.Configuration["Auth0:AuthUrl"];
-//     config.BaseAddress = new Uri(apiUrl);
-// });
-
-// Add Authentication
-// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//                 .AddCookie();
-
 builder.Services.AddAuth0WebAppAuthentication(options => {
 
     options.ResponseType = "code";
@@ -54,7 +39,6 @@ builder.Services.AddScoped<CarBrandClient>();
 builder.Services.AddScoped<CarLineClient>();
 builder.Services.AddScoped<ContactClient>();
 builder.Services.AddScoped<ProductClient>();
-// builder.Services.AddScoped<AuthClient>();
 
 // Services
 builder.Services.AddScoped<CarBrandService>();
