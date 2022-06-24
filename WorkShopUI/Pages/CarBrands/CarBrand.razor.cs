@@ -1,7 +1,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
 namespace WorkShopUI.Pages
@@ -32,6 +32,7 @@ namespace WorkShopUI.Pages
             HideAddModal();
             Search();
 
+            base.OnInitialized();
         }
 
         protected override void Search()
@@ -40,6 +41,7 @@ namespace WorkShopUI.Pages
             HideErrorMessage();
 
             var result = Service.Search(SearchView);
+
             result.Match(right => {
 
                 SearchResponse = right;
@@ -54,6 +56,7 @@ namespace WorkShopUI.Pages
             Search();
             StateHasChanged();
         }
+
         protected void ShowAddModal()
         {
             CarBrandView = new CarBrandView()
@@ -95,7 +98,7 @@ namespace WorkShopUI.Pages
         protected override void Add()
         {
             var result = Service.Add(CarBrandView);
-
+            
             result.Match(right => {
 
                 HideAddModal();

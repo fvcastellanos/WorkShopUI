@@ -1,9 +1,7 @@
-
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using LanguageExt;
+using Microsoft.AspNetCore.Authentication;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -11,10 +9,13 @@ namespace WorkShopUI.Clients
     public abstract class BaseHttpClient
     {
         private const string AuthorizationHeaderName = "Authorization";
+
         protected readonly HttpClient HttpClient;
+
+        protected readonly HttpContext HttpContext;
         protected readonly JsonSerializerOptions JsonSerializerOptions;
 
-        public BaseHttpClient(IHttpClientFactory httpClientFactory)
+        public BaseHttpClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             HttpClient = httpClientFactory.CreateClient(ClientConstants.ClientName);
 
@@ -22,6 +23,19 @@ namespace WorkShopUI.Clients
             {
                 PropertyNameCaseInsensitive = true
             };
+
+            HttpContext = httpContextAccessor.HttpContext;
+        }
+
+        protected async Task<string> GetAccessTokenAsync()
+        {
+            return await HttpContext.GetTokenAsync("access_token");
+        }
+
+        protected string GetAccessToken()
+        {
+            return HttpContext.GetTokenAsync("access_token")
+                .Result;
         }
 
         protected T JsonDeserialize<T> (string jsonPayload)
@@ -30,8 +44,7 @@ namespace WorkShopUI.Clients
         }
 
         protected void AddAuthenticationHeader(string token) 
-        {
-            
+        {            
             if (HttpClient.DefaultRequestHeaders.Contains(AuthorizationHeaderName))
             {
                 HttpClient.DefaultRequestHeaders.Remove(AuthorizationHeaderName);
@@ -46,33 +59,81 @@ namespace WorkShopUI.Clients
             return new StringContent(payload, Encoding.UTF8, "application/json");
         }
 
-        protected SearchResponse<T> Find<T>(string token, string url, string errorMessage)
+        protected async Task<SearchResponse<T>> SearchAsync<T>(string token, string url)
         {
-            // AddAuthenticationHeader(token);
+            AddAuthenticationHeader(token);
+
+            using (var response = await HttpClient.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var responsePayload = await response.Content
+                        .ReadAsStringAsync();
+
+                    return JsonDeserialize<SearchResponse<T>>(responsePayload);
+                }
+
+                var apiError = await response.Content
+                    .ReadFromJsonAsync<ApiError>();
+
+                throw new HttpRequestException(apiError.Message);            
+            }
+        }
+
+        protected SearchResponse<T> Search<T>(string token, string url)
+        {
+            AddAuthenticationHeader(token);
 
             using (var response = HttpClient.GetAsync(url).Result)
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    var responsePayload = response.Content.ReadAsStringAsync()
+                    var responsePayload = response.Content
+                        .ReadAsStringAsync()
                         .Result;
 
                     return JsonDeserialize<SearchResponse<T>>(responsePayload);
                 }
-            }
 
-            throw new HttpRequestException(errorMessage);            
+                var apiError = GetApiError(response);
+                throw new HttpRequestException(apiError.Message);            
+            }
         }
 
-        protected Option<T> FindById<T>(string token, string url, string errorMessage)
+        protected async Task<Option<T>> FindByIdAsync<T>(string token, string url)
         {
-            // AddAuthenticationHeader(token);
+            AddAuthenticationHeader(token);
+
+            using (var response = await HttpClient.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var responsePayload = await response.Content
+                        .ReadAsStringAsync();
+
+                    return JsonDeserialize<T>(responsePayload);
+                }
+
+                if (response.StatusCode.Equals(404))
+                {
+                    return Option<T>.None;
+                }
+
+                var apiError = await GetApiErrorAsync(response); 
+                throw new HttpRequestException(apiError.Message);
+            }
+        }
+
+        protected Option<T> FindById<T>(string token, string url)
+        {
+            AddAuthenticationHeader(token);
 
             using (var response = HttpClient.GetAsync(url).Result)
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    var responsePayload = response.Content.ReadAsStringAsync()
+                    var responsePayload = response.Content
+                        .ReadAsStringAsync()
                         .Result;
 
                     return JsonDeserialize<T>(responsePayload);
@@ -82,35 +143,80 @@ namespace WorkShopUI.Clients
                 {
                     return Option<T>.None;
                 }
-            }
 
-            throw new HttpRequestException(errorMessage);
+                var apiError = GetApiError(response); 
+                throw new HttpRequestException(apiError.Message);
+            }
         }
 
-        protected void Add(string token, string url, StringContent content, string errorMessage)
+        protected async Task AddAsync(string token, string url, StringContent content)
         {
-            // AddAuthenticationHeader(token);
+            AddAuthenticationHeader(token);
+
+            using (var response = await HttpClient.PostAsync(url, content))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    var apiError = await GetApiErrorAsync(response);
+                    throw new HttpRequestException(apiError.Message);
+                }
+            }
+        }
+
+        protected void Add(string token, string url, StringContent content)
+        {
+            AddAuthenticationHeader(token);
 
             using (var response = HttpClient.PostAsync(url, content).Result)
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(errorMessage);
+                    var apiError = GetApiError(response);
+                    throw new HttpRequestException(apiError.Message);
                 }
             }
         }
 
-        protected void Update(string token, string url, StringContent content, string errorMessage)
+        protected async Task UpdateAsync(string token, string url, StringContent content)
         {
-            // AddAuthenticationHeader(token);
+            AddAuthenticationHeader(token);
+
+            using (var response = await HttpClient.PutAsync(url, content))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    var apiError = await GetApiErrorAsync(response);
+                    throw new HttpRequestException(apiError.Message);
+                }
+            }
+        }
+
+        protected void Update(string token, string url, StringContent content)
+        {
+            AddAuthenticationHeader(token);
 
             using (var response = HttpClient.PutAsync(url, content).Result)
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new HttpRequestException(errorMessage);
+                    var apiError = GetApiError(response);
+                    throw new HttpRequestException(apiError.Message);
                 }
             }
         }
+
+        private async Task<ApiError> GetApiErrorAsync(HttpResponseMessage response)
+        {
+            return await response.Content
+                .ReadFromJsonAsync<ApiError>();
+        }
+
+        private ApiError GetApiError(HttpResponseMessage response)
+        {
+            return response.Content
+                .ReadFromJsonAsync<ApiError>()
+                .Result;
+        }
+
     }
 }

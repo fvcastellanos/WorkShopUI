@@ -1,11 +1,11 @@
-@inherits ContactBase
+@inherits ProductBase
 
-@page "/contacts"
+@page "/products"
 
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-10">
-            <h2>Contactos</h2>
+            <h2>Productos</h2>
 
             <div class="top-separator">
                 <div class="card">
@@ -30,10 +30,10 @@
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label for="type">Tipo de Contacto</label>
+                                        <label for="type">Tipo de Producto</label>
                                         <select class="custom-select" id="type" @bind="SearchView.Type">
-                                            <option value="C">Cliente</option>
-                                            <option value="P">Proveedor</option>
+                                            <option value="P">Producto</option>
+                                            <option value="S">Servicio</option>
                                         </select>
                                     </div>
                                 </div>
@@ -86,18 +86,18 @@
                         <th>Activo</th>
                     </thead>
                     <tbody>
-                        @foreach (var contact in Contacts)
+                        @foreach (var product in Products)
                         {
                             <tr>
                                 <td>
-                                    <div @onclick="() => GetContact(contact.Id)" class="crud-icon"> 
+                                    <div @onclick="() => GetProduct(product.Id)" class="crud-icon"> 
                                         <span class="oi oi-brush" aria-hidden="true"></span>
                                     </div>
                                 </td>
-                                <td>@contact.Code</td>
-                                <td>@contact.Name</td>
-                                <td><ContactTypeField Value="@contact.Type" /></td>
-                                <td><ActiveField Value="@contact.Active" /></td>
+                                <td>@product.Code</td>
+                                <td>@product.Name</td>
+                                <td><ProductTypeField Value="@product.Type" /></td>
+                                <td><ActiveField Value="@product.Active" /></td>
                             </tr>
                         }
                     </tbody>
@@ -112,11 +112,11 @@
                             <div class="modal-header">
                                 @if (ModifyModal)
                                 {
-                                    <h5 class="modal-title">Actualizar Contacto</h5>
+                                    <h5 class="modal-title">Actualizar Producto</h5>
                                 }
                                 else
                                 {
-                                    <h5 class="modal-title">Agregar Contacto</h5>
+                                    <h5 class="modal-title">Agregar Producto</h5>
                                 }
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
                                     <span aria-hidden="true">&times;</span>
@@ -131,36 +131,36 @@
                                     <ValidationSummary/>
                                     <div class="form-group">
                                         <label for="type">Tipo</label>
-                                        <select class="custom-select" id="type" @bind="ContactView.Type">
-                                            <option value="CUSTOMER">Cliente</option>
-                                            <option value="PROVIDER">Proveedor</option>
+                                        <select class="custom-select" id="type" @bind="ProductView.Type">
+                                            <option value="PRODUCT">Producto</option>
+                                            <option value="SERVICE">Servicio</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="code">Código</label>
-                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ContactView.Code"/>
+                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ProductView.Code"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ContactView.Name"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Contacto</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Contacto" @bind="ContactView.Contact"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nit">NIT</label>
-                                        <input type="text" class="form-control" id="nit" placeholder="NIT" @bind="ContactView.TaxId"/>
+                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ProductView.Name"/>
                                     </div>
                                     <div class="form-group">
                                         <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="ContactView.Description" row="4"></textarea>
+                                        <textarea class="form-control" id="description" @bind="ProductView.Description" row="4"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="minimalQuantity">Cantidad Mínima</label>
+                                        <input type="number" min="0" class="form-control" id="minimalQuantity" placeholder="Cantidad Mínima" @bind="ProductView.MinimalQuantity"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="salePrice">Precio Venta</label>
+                                        <input type="number" min="0" class="form-control" id="salePrice" placeholder="Precio Venta" @bind="ProductView.SalePrice"/>
                                     </div>
                                     @if (ModifyModal)
                                     {
                                         <label>Activo</label>
                                         <div class="form-group">
-                                            <select class="form-control" @bind="ContactView.Active">
+                                            <select class="form-control" @bind="ProductView.Active">
                                                 <option value="INACTIVE">No</option>
                                                 <option value="ACTIVE">Si</option>
                                             </select>

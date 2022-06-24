@@ -1,11 +1,12 @@
+
 using System.ComponentModel.DataAnnotations;
 
-namespace WorkShopUI.Domain
+namespace WorkShopUI.Domain.Views
 {
-    public class CarLineView
+    public class CarBrandView
     {
         public string Id { get; set; }
-
+        
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
 namespace WorkShopUI.Pages
@@ -34,6 +34,8 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
+
+            base.OnInitialized();
 
         }
 

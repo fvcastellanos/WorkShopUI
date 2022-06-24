@@ -1,0 +1,35 @@
+@inherits UserInformationBase
+
+@page "/profile"
+
+<AuthorizeView>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <h2>Información del Usuario</h2>
+
+                <div class="row top-separator">
+                    <div class="col-2">
+                        <img src='@UserInformation["picture"]' class="img-fluid rounded-start" alt="User picture">
+                    </div>
+                    <div class="col-8">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <td>@UserInformation["name"]</td>
+                                </tr>
+                                <tr>
+                                    <th>Nickname</th>
+                                    <td>@UserInformation["nickname"]</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</AuthorizeView>

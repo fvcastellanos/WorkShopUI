@@ -1,9 +1,9 @@
 
-namespace WorkShopUI.Domain
+namespace WorkShopUI.Domain.Views
 {
     public enum ContactTypeView
     {
-        CLIENT,
+        CUSTOMER,
         PROVIDER
     }
 }

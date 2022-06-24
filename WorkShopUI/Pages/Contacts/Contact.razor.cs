@@ -2,7 +2,7 @@
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
 namespace WorkShopUI.Pages
@@ -34,6 +34,8 @@ namespace WorkShopUI.Pages
 
             HideAddModal();
             Search();
+
+            base.OnInitialized();
         }
 
         protected override void Add()
@@ -49,7 +51,9 @@ namespace WorkShopUI.Pages
 
         protected override void DisplayPage(int pageNumber)
         {
-            throw new NotImplementedException();
+            SearchView.Page = pageNumber;
+            Search();
+            StateHasChanged();
         }
 
         protected override void Search()
@@ -69,14 +73,22 @@ namespace WorkShopUI.Pages
 
         protected override void Update()
         {
-            throw new NotImplementedException();
+            var result = ContactService.Update(ContactView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+
+            }, DisplayModalError);
         }
 
         protected void GetContact(string id)
         {
             var holder = ContactService.FindById(id);
 
-            
+            holder.Match(ShowEditModal, 
+                () => ShowErrorMessage("No encontro el contacto seleccionado"));
         }
 
         protected void ShowAddModal() 
@@ -92,6 +104,13 @@ namespace WorkShopUI.Pages
 
             HideModalError();
             ShowModal();
+        }
+
+        private void ShowEditModal(ContactView view)
+        {
+            ContactView = view;
+            EditContext = new EditContext(ContactView);
+            ShowEditModal();
         }
     }
 }

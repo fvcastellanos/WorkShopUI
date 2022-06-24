@@ -1,5 +1,5 @@
 using WorkShopUI.Clients.Domain;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 
 namespace WorkShopUI.Transformers
 {

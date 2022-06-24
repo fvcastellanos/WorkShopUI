@@ -4,10 +4,9 @@ using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
 {
-
     public class CarBrandClient : BaseHttpClient
     {
-        public CarBrandClient(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public CarBrandClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor) : base(httpClientFactory, httpContextAccessor)
         {
         }
 
@@ -15,31 +14,33 @@ namespace WorkShopUI.Clients
         {
             var url = $"{ClientConstants.CarBrandResource}?active={active}&name={name}&page={page}&size={size}";
 
-            return Find<CarBrand>("", url, "Unable to retrieve search results");
+            var accessToken = GetAccessToken();
+            return Search<CarBrand>(accessToken, url);
         }
 
-        public CarBrand Add(CarBrand carBrand) {
-
+        public void Add(CarBrand carBrand) 
+        {
             var content = CreateStringContent(carBrand);
-            Add("", ClientConstants.CarBrandResource, content, "Unable to add Car Brand");
+            var accessToken = GetAccessToken();
 
-            return carBrand;
+            Add(accessToken, ClientConstants.CarBrandResource, content);
         }
 
         public Option<CarBrand> FindById(string id)
         {
             var url = $"{ClientConstants.CarBrandResource}/{id}";
+            var accessToken = GetAccessToken();
 
-            return FindById<CarBrand>("", url, $"Unable to find Car brand with id: {id}");
+            return FindById<CarBrand>(accessToken, url);
         }
 
         public void Update(string id, CarBrand carBrand)
         {
-
             var url = $"{ClientConstants.CarBrandResource}/{id}";
             var content = CreateStringContent(carBrand);
+            var accessToken = GetAccessToken();
 
-            Update("", url, content, $"Unable to update car brand with id: {id}");
+            Update(accessToken, url, content);
         }
     }
 

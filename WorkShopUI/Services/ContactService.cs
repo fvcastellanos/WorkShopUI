@@ -1,6 +1,6 @@
 using LanguageExt;
 using WorkShopUI.Clients;
-using WorkShopUI.Domain;
+using WorkShopUI.Domain.Views;
 using WorkShopUI.Transformers;
 
 namespace WorkShopUI.Services
@@ -17,12 +17,11 @@ namespace WorkShopUI.Services
             _contactClient = contactClient;
         }
 
-        public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) {
-
-            try {
-                
-                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type, 
-                    searchView.Page, searchView.Size);
+        public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) 
+        {
+            try {                
+                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, 
+                    searchView.Type, searchView.Page, searchView.Size);
 
                 return new PagedView<ContactView>
                 {
@@ -37,7 +36,6 @@ namespace WorkShopUI.Services
                 _logger.LogError(exception, "Unable to perform search");
                 return "No es posible realizar la búsqueda de Contactos";
             }
-            
         }
 
         public Either<string, ContactView> Add(ContactView contactView)
@@ -49,9 +47,13 @@ namespace WorkShopUI.Services
 
                 return contactView;
             }
+            catch (HttpRequestException httpRequestException)
+            {                
+                _logger.LogError(httpRequestException, "Unable to add new contact");
+                return httpRequestException.Message;
+            }
             catch (Exception exception)
-            {
-                
+            {                
                 _logger.LogError(exception, "Unable to add new contact");
                 return $"No es posible agregar el contacto de: {contactView.Name}";
             }
@@ -68,6 +70,27 @@ namespace WorkShopUI.Services
             {
                 _logger.LogError(exception, $"Unable to find Contact with id: {id}");
                 return null;
+            }
+        }
+
+        public Either<string, ContactView> Update(ContactView contactView)
+        {
+            try 
+            {
+                var contact = ContactTransformer.ToModel(contactView);
+                _contactClient.UpdateAsync(contactView.Id, contact);
+
+                return contactView;
+            }
+            catch (HttpRequestException httpRequestException)
+            {                
+                _logger.LogError(httpRequestException, $"Unable to update contact with id: {contactView.Name}");
+                return httpRequestException.Message;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Unable to update contact with id: {contactView.Id}");
+                return $"No es posible actualizar el contacto: {contactView.Name}";
             }
         }
     }
