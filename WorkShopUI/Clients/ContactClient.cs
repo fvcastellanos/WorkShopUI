@@ -37,7 +37,7 @@ namespace WorkShopUI.Clients
             return FindById<Contact>(accessToken, url);
         }
 
-        public void UpdateAsync(string id, Contact contact)
+        public void Update(string id, Contact contact)
         {
             var url = $"{ClientConstants.ContactResource}/{id}";
             var content = CreateStringContent(contact);

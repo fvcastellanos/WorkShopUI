@@ -78,7 +78,7 @@ namespace WorkShopUI.Services
             try 
             {
                 var contact = ContactTransformer.ToModel(contactView);
-                _contactClient.UpdateAsync(contactView.Id, contact);
+                _contactClient.Update(contactView.Id, contact);
 
                 return contactView;
             }

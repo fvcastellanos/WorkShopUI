@@ -1,3 +1,4 @@
+using LanguageExt;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -16,6 +17,31 @@ namespace WorkShopUI.Clients
             var accessToken = GetAccessToken();
 
             return Search<Product>(accessToken, url);
+        }
+
+        public void Add(Product product)
+        {
+            var content = CreateStringContent(product);
+            var accessToken = GetAccessToken();
+
+            Add(accessToken, ClientConstants.ProductResource, content);
+        }
+
+        public Option<Product> FindById(string id)
+        {
+            var url = $"{ClientConstants.ProductResource}/{id}";
+            var accessToken = GetAccessToken();
+
+            return FindById<Product>(accessToken, url);
+        }
+
+        public void Update(string id, Product product)
+        {
+            var url = $"{ClientConstants.ProductResource}/{id}";
+            var content = CreateStringContent(product);
+            var accessToken = GetAccessToken();
+
+            Update(accessToken, url, content);
         }
     }
 }
