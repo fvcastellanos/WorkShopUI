@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
 using WorkShopUI.Services;
 
@@ -29,12 +30,19 @@ namespace WorkShopUI.Pages
             };
 
             Search();
-            // base.OnInitialized();
+            base.OnInitialized();
         }
 
         protected override void Add()
         {
-            throw new NotImplementedException();
+            var result = ProductService.Add(ProductView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+
+            }, DisplayModalError);
         }
 
         protected override void DisplayPage(int pageNumber)
@@ -59,17 +67,43 @@ namespace WorkShopUI.Pages
 
         protected override void Update()
         {
-            throw new NotImplementedException();
+            var result = ProductService.Update(ProductView);
+
+            result.Match(right => {
+
+                HideAddModal();
+                Search();
+            }, DisplayModalError);
         }
 
         protected void ShowAddModal()
         {
+            ProductView = new ProductView
+            {
+                Active = "ACTIVE",
+                Type = "PRODUCT"
+            };
 
+            EditContext = new EditContext(ProductView);
+            ModifyModal = false;
+
+            HideModalError();
+            ShowModal();
         }
 
         protected void GetProduct(string id)
         {
+            var holder = ProductService.FindById(id);
 
+            holder.Match(ShowEditModal, 
+                () => DisplayModalError("No se encuentra el producto") );
+        }
+
+        private void ShowEditModal(ProductView productView)
+        {
+            ProductView = productView;
+            EditContext = new EditContext(ProductView);
+            ShowEditModal();
         }
     }
 }

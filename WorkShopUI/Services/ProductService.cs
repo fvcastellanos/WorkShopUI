@@ -38,5 +38,61 @@ namespace WorkShopUI.Services
                 return "No es posible realizar la búsqueda";
             }
         }
+
+        public Either<string, ProductView> Add(ProductView productView)
+        {
+            try
+            {
+                var model = ProductTransformer.ToModel(productView);                
+                _productClient.Add(model);
+
+                return productView;
+            }
+            catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, $"Unable to add a new product with id: {productView.Id}");
+                return httpRequestException.Message;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Unable to add a new product");
+                return "No es posible agregar el producto";
+            }
+        }
+
+        public Option<ProductView> FindById(string id)
+        {
+            try
+            {
+                return _productClient.FindById(id)
+                    .Map(ProductTransformer.ToView);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Unable to find product with id: {id}");
+                return null;
+            }
+        }
+
+        public Either<string, ProductView> Update(ProductView productView)
+        {
+            try
+            {
+                var model = ProductTransformer.ToModel(productView);
+                _productClient.Update(productView.Id, model);
+
+                return productView;
+            }
+             catch (HttpRequestException httpRequestException)
+            {
+                _logger.LogError(httpRequestException, $"Unable to update product with id: {productView.Id}");
+                return httpRequestException.Message;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Unable to update product");
+                return "No es posible actualizar el producto";
+            }
+       }
     }
 }
