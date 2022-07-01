@@ -128,7 +128,7 @@
 
                                 <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
                                     <DataAnnotationsValidator/>
-                                    <ValidationSummary/>
+                                    <Microsoft.AspNetCore.Components.Forms.ValidationSummary/>
                                     <div class="form-group">
                                         <label for="type">Tipo</label>
                                         <select class="custom-select" id="type" @bind="ContactView.Type">

@@ -1,4 +1,6 @@
 
+using Blazorise;
+using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
@@ -29,6 +31,7 @@ namespace WorkShopUI.Pages
                 Name = ""
             };
 
+            CarBrandView = new CarBrandView();
             HideAddModal();
             Search();
 
@@ -55,6 +58,12 @@ namespace WorkShopUI.Pages
             SearchView.Page = pageNumber;
             Search();
             StateHasChanged();
+        }
+
+        protected void OnReadData(DataGridReadDataEventArgs<CarBrandView> eventArgs)
+        {
+            SearchView.Page = eventArgs.Page - 1;
+            Search();
         }
 
         protected void ShowAddModal()
@@ -104,6 +113,17 @@ namespace WorkShopUI.Pages
                 HideAddModal();
                 Search();
             }, DisplayModalError);
+        }
+
+        protected void SaveChanges2()
+        {
+            if (Validations.ValidateAll().Result)
+            {
+                SaveChanges();
+                return;
+            }
+
+            return;
         }
 
         // ------------------------------------------------------------------------------------

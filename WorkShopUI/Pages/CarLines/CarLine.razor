@@ -117,7 +117,7 @@
 
                                 <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
                                     <DataAnnotationsValidator/>
-                                    <ValidationSummary/>
+                                    <Microsoft.AspNetCore.Components.Forms.ValidationSummary/>
                                     <div class="form-group">
                                         <label for="name">Nombre</label>
                                         <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="CarLineView.Name"/>
