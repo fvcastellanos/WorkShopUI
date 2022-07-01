@@ -1,3 +1,4 @@
+using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
@@ -32,6 +33,7 @@ namespace WorkShopUI.Pages
                 Name = ""
             };
 
+            CarLineView = new CarLineView();
             HideAddModal();
             Search();
 
@@ -102,6 +104,12 @@ namespace WorkShopUI.Pages
             SearchView.Page = pageNumber;
             Search();
             StateHasChanged();
+        }
+
+        protected void OnReadData(DataGridReadDataEventArgs<CarLineView> eventArgs)
+        {
+            SearchView.Page = eventArgs.Page - 1;
+            Search();
         }
 
         // ------------------------------------------------------------------------------------

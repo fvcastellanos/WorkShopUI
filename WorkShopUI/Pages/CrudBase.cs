@@ -60,10 +60,15 @@ namespace WorkShopUI.Pages
 
         protected void SaveChanges()
         {
-            if (!EditContext.Validate())
+            if (!Validations.ValidateAll().Result)
             {
                 return;
             }
+
+            // if (!EditContext.Validate())
+            // {
+            //     return;
+            // }
 
             if (ModifyModal)
             {
