@@ -1,46 +1,7 @@
-﻿@* <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">WorkShopUI</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-} *@
-
+﻿
 <AuthorizeView>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">WorkShop</a>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Control Taller</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -73,6 +34,7 @@
           <NavLink class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Movimientos</NavLink>
           <div class="dropdown-menu">
             <NavLink class="dropdown-item" href="provider-invoices">Facturas de Proveedores</NavLink>      
+            <NavLink class="dropdown-item" href="work-orders">Ordenes de Trabajo</NavLink>
             @* <NavLink class="dropdown-item" href="operation-types">Tipos de Operación</NavLink>          
             <NavLink class="dropdown-item" href="products">Productos</NavLink>          
             <NavLink class="dropdown-item" href="providers">Proveedores</NavLink>       *@
@@ -101,4 +63,3 @@
   </nav>
 
 </AuthorizeView>
-

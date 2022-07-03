@@ -43,12 +43,14 @@ builder.Services.AddScoped<CarBrandClient>();
 builder.Services.AddScoped<CarLineClient>();
 builder.Services.AddScoped<ContactClient>();
 builder.Services.AddScoped<ProductClient>();
+builder.Services.AddScoped<WorkOrderClient>();
 
 // Services
 builder.Services.AddScoped<CarBrandService>();
 builder.Services.AddScoped<CarLineService>();
 builder.Services.AddScoped<ContactService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<WorkOrderService>();
 
 // Blazorise
 builder.Services.AddBlazorise( options => {

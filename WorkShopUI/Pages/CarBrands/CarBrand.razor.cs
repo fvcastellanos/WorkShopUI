@@ -53,13 +53,6 @@ namespace WorkShopUI.Pages
             }, ShowErrorMessage); 
         }
         
-        protected override void DisplayPage(int pageNumber)
-        {
-            SearchView.Page = pageNumber;
-            Search();
-            StateHasChanged();
-        }
-
         protected void OnReadData(DataGridReadDataEventArgs<CarBrandView> eventArgs)
         {
             SearchView.Page = eventArgs.Page - 1;

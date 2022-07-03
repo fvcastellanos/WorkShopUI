@@ -51,13 +51,6 @@ namespace WorkShopUI.Pages
             }, DisplayModalError);
         }
 
-        protected override void DisplayPage(int pageNumber)
-        {
-            SearchView.Page = pageNumber;
-            Search();
-            StateHasChanged();
-        }
-
         protected override void Search()
         {
             Contacts = new List<ContactView>();

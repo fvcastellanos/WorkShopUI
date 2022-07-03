@@ -99,13 +99,6 @@ namespace WorkShopUI.Pages
             ShowModal();
         }
 
-        protected override void DisplayPage(int pageNumber)
-        {
-            SearchView.Page = pageNumber;
-            Search();
-            StateHasChanged();
-        }
-
         protected void OnReadData(DataGridReadDataEventArgs<CarLineView> eventArgs)
         {
             SearchView.Page = eventArgs.Page - 1;

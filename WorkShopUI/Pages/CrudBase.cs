@@ -52,11 +52,10 @@ namespace WorkShopUI.Pages
         }
 
         protected abstract void Update();
+
         protected abstract void Add();
 
         protected abstract void Search();
-
-        protected abstract void DisplayPage(int pageNumber);
 
         protected void SaveChanges()
         {
@@ -64,11 +63,6 @@ namespace WorkShopUI.Pages
             {
                 return;
             }
-
-            // if (!EditContext.Validate())
-            // {
-            //     return;
-            // }
 
             if (ModifyModal)
             {

@@ -47,11 +47,6 @@ namespace WorkShopUI.Pages
             }, DisplayModalError);
         }
 
-        protected override void DisplayPage(int pageNumber)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void Search()
         {
             Products = new List<ProductView>();

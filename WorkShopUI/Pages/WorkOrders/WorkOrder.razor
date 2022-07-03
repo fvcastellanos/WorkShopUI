@@ -1,0 +1,56 @@
+@inherits WorkOrderBase
+
+@page "/work-orders"
+
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <h2>Ordenes de trabajo</h2>
+
+            <div class="top-separator">
+
+                <Card>
+                    <CardBody>
+                        <CardTitle>Búsqueda</CardTitle>
+                        <Fields>
+                            <Field>
+                                <FieldLabel>Número</FieldLabel>
+                                <TextEdit Placeholder="Número" @bind-Text="@SearchView.Number"/>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is5">
+                                <FieldLabel>Número de Placa</FieldLabel>
+                                <TextEdit Placeholder="Número de Placa" @bind-Text="@SearchView.PlateNumber"/>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Estado de la Orden</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Type" TValue="string" Class="custom-select">
+                                    <SelectItem Value="@((string)"")">Todos</SelectItem>
+                                    <SelectItem Value="@((string)"P")">En Proceso</SelectItem>
+                                    <SelectItem Value="@((string)"A")">Anulada</SelectItem>
+                                    <SelectItem Value="@((string)"C")">Cerrada</SelectItem>
+                                    <SelectItem Value="@((string)"D")">Entregada</SelectItem>
+                                </Select>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Filas</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Size" Class="custom-select" TValue="int">
+                                    <SelectItem Value="10">10</SelectItem>
+                                    <SelectItem Value="25">25</SelectItem>
+                                    <SelectItem Value="50">50</SelectItem>
+                                    <SelectItem Value="100">100</SelectItem>
+                                    <SelectItem Value="50">500</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Button Color="Color.Secondary" Clicked="@Search">Buscar</Button>
+                        <Button Color="Color.Primary" Clicked="@ShowAddModal">Agregar Orden</Button>
+                    </CardBody>                    
+                </Card>
+
+            </div>
+        </div>
+    </div>
+</div>
