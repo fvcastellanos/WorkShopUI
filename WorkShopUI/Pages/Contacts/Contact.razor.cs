@@ -1,5 +1,6 @@
 
 
+using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
@@ -32,6 +33,7 @@ namespace WorkShopUI.Pages
                 Type = "C"
             };
 
+            ContactView = new ContactView();
             HideAddModal();
             Search();
 
@@ -105,6 +107,14 @@ namespace WorkShopUI.Pages
             HideModalError();
             ShowModal();
         }
+
+        protected void OnReadData(DataGridReadDataEventArgs<ContactView> eventArgs)
+        {
+            SearchView.Page = eventArgs.Page - 1;
+            Search();
+        }
+
+        // ------------------------------------------------------------------------------------------
 
         private void ShowEditModal(ContactView view)
         {

@@ -1,3 +1,4 @@
+using Blazorise.DataGrid;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using WorkShopUI.Domain.Views;
@@ -29,6 +30,7 @@ namespace WorkShopUI.Pages
                 Size = 25
             };
 
+            ProductView = new ProductView();
             Search();
             base.OnInitialized();
         }
@@ -98,6 +100,14 @@ namespace WorkShopUI.Pages
             holder.Match(ShowEditModal, 
                 () => DisplayModalError("No se encuentra el producto") );
         }
+
+        protected void OnReadData(DataGridReadDataEventArgs<ProductView> eventArgs)
+        {
+            SearchView.Page = eventArgs.Page - 1;
+            Search();
+        }
+
+        // ------------------------------------------------------------------------------------------
 
         private void ShowEditModal(ProductView productView)
         {

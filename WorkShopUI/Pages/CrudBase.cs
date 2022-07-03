@@ -1,4 +1,5 @@
 
+using Blazorise;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace WorkShopUI.Pages
@@ -12,6 +13,8 @@ namespace WorkShopUI.Pages
         protected bool ModifyModal;
         protected bool HasModalError;
         protected string ModalErrorMessage;
+
+        protected Validations Validations;
 
         protected void DisplayModalError(string error)
         {
@@ -57,10 +60,15 @@ namespace WorkShopUI.Pages
 
         protected void SaveChanges()
         {
-            if (!EditContext.Validate())
+            if (!Validations.ValidateAll().Result)
             {
                 return;
             }
+
+            // if (!EditContext.Validate())
+            // {
+            //     return;
+            // }
 
             if (ModifyModal)
             {

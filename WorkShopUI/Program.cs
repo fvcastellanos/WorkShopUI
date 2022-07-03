@@ -1,4 +1,7 @@
 using Auth0.AspNetCore.Authentication;
+using Blazorise;
+using Blazorise.Bootstrap5;
+using Blazorise.Icons.FontAwesome;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using WorkShopUI.Clients;
 using WorkShopUI.Services;
@@ -25,6 +28,7 @@ builder.Services.AddHttpClient(ClientConstants.ClientName, config => {
 builder.Services.AddAuth0WebAppAuthentication(options => {
 
     options.ResponseType = "code";
+    options.Scope = "openid profile email";
     options.Domain = builder.Configuration["Auth0:Domain"];
     options.ClientId = builder.Configuration["Auth0:ClientId"];
     options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
@@ -45,6 +49,13 @@ builder.Services.AddScoped<CarBrandService>();
 builder.Services.AddScoped<CarLineService>();
 builder.Services.AddScoped<ContactService>();
 builder.Services.AddScoped<ProductService>();
+
+// Blazorise
+builder.Services.AddBlazorise( options => {
+    options.Immediate = true;
+})
+.AddBootstrap5Providers()
+.AddFontAwesomeIcons();
 
 var app = builder.Build();
 

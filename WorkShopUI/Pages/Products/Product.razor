@@ -1,6 +1,7 @@
 @inherits ProductBase
 
 @page "/products"
+@using Domain.Views
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -8,66 +9,52 @@
             <h2>Productos</h2>
 
             <div class="top-separator">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Búsqueda</h4>
-                        <fieldset>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="searchName">Nombre</label>
-                                        <input type="text" class="form-control" id="searchName" placeholder="Nombre" @bind="SearchView.Name">
-                                    </div>
-                                </div>
-                                <div class="col-5">
-                                    <div class="form-group">
-                                        <label for="searchCode">Código</label>
-                                        <input type="text" class="form-control" id="searchCode" placeholder="Código" @bind="SearchView.Code">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="type">Tipo de Producto</label>
-                                        <select class="custom-select" id="type" @bind="SearchView.Type">
-                                            <option value="P">Producto</option>
-                                            <option value="S">Servicio</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="searchActive">Activo</label>
-                                        <select class="custom-select" id="searchActive" @bind="SearchView.Active">
-                                            <option value="1">Si</option>
-                                            <option value="0">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="top">Filas</label>
-                                        <select class="custom-select" id="top" @bind="SearchView.Size">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="500">500</option>
-                                        </select>
-                                    </div>                            
-                                </div>
-                            </div>
-
-                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
-                            <input type="button" class="btn btn-primary" value="Agregar Contacto" @onclick="ShowAddModal" />
-                        </fieldset>
-                    </div>
-                </div>
+                <Card>
+                    <CardBody>
+                        <CardTitle>Búsqueda</CardTitle>
+                        <Fields>
+                            <Field>
+                                <FieldLabel>Nombre</FieldLabel>
+                                <TextEdit Placeholder="Nombre" @bind-Text="@SearchView.Name"/>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is5">
+                                <FieldLabel>Código</FieldLabel>
+                                <TextEdit Placeholder="Código" @bind-Text="@SearchView.Code"/>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Tipo de Producto</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Type" TValue="string" Class="custom-select">
+                                    <SelectItem Value="@((string)"P")">Producto</SelectItem>
+                                    <SelectItem Value="@((string)"S")">Servicio</SelectItem>
+                                </Select>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Activo</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Active" TValue="int" Class="custom-select">
+                                    <SelectItem Value="1">Si</SelectItem>
+                                    <SelectItem Value="0">No</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Filas</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Size" Class="custom-select" TValue="int">
+                                    <SelectItem Value="10">10</SelectItem>
+                                    <SelectItem Value="25">25</SelectItem>
+                                    <SelectItem Value="50">50</SelectItem>
+                                    <SelectItem Value="100">100</SelectItem>
+                                    <SelectItem Value="50">500</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Button Color="Color.Secondary" Clicked="@Search">Buscar</Button>
+                        <Button Color="Color.Primary" Clicked="@ShowAddModal">Agregar Producto</Button>
+                    </CardBody>                    
+                </Card>
 
             </div>
 
@@ -75,106 +62,134 @@
             
             <div class="top-separator">
 
-                <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" />
+                <ErrorMessage Display="@DisplayErrorMessage" Message="@ErrorMessage" />
 
-                <table class="table table-striped">
-                    <thead>
-                        <th>#</th>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Activo</th>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Products)
-                        {
-                            <tr>
-                                <td>
-                                    <div @onclick="() => GetProduct(product.Id)" class="crud-icon"> 
-                                        <span class="oi oi-brush" aria-hidden="true"></span>
+                <DataGrid TItem="ProductView"
+                        Data="@Products"
+                        ReadData="@OnReadData"
+                        TotalItems="@SearchResponse.Pageable.TotalElements"
+                        PageSize="@SearchView.Size"
+                        ShowPager="true"
+                        Striped="true"
+                        Responsive>
+                    
+                    <ChildContent>
+                        <DataGridCommandColumn EditCommandAllowed="true" />
+                        <DataGridColumn TItem="ProductView" Field="Id" Caption="#">
+                            <DisplayTemplate>
+                                @{
+                                    var id = (context as ProductView)?.Id;
+                                    <div @onclick="() => GetProduct(id)" class="crud-icon"> 
+                                        <Icon Name="IconName.Edit" />
                                     </div>
-                                </td>
-                                <td>@product.Code</td>
-                                <td>@product.Name</td>
-                                <td><ProductTypeField Value="@product.Type" /></td>
-                                <td><ActiveField Value="@product.Active" /></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ProductView" Field="Code" Caption="Código" />
+                        <DataGridColumn TItem="ProductView" Field="Name" Caption="Nombre" />
+                        <DataGridColumn TItem="ProductView" Field="Active" Caption="Tipo">
+                            <DisplayTemplate>
+                                @{
+                                    var type = (context as ProductView)?.Type;
+                                    <ProductTypeField Value="@type" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ProductView" Field="Active" Caption="Activo">
+                            <DisplayTemplate>
+                                @{
+                                    var active = (context as ProductView)?.Active;
+                                    <ActiveField Value="@active" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </ChildContent>
+                </DataGrid>
             </div>
 
-            @if (DisplayModal)
-            {
-                <div class="modal" tabindex="-1" role="dialog" style="display: block">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                @if (ModifyModal)
-                                {
-                                    <h5 class="modal-title">Actualizar Producto</h5>
-                                }
-                                else
-                                {
-                                    <h5 class="modal-title">Agregar Producto</h5>
-                                }
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
+            <Modal @bind-Visible="@DisplayModal">
+                <ModalContent Centered>
+                    <ModalHeader>
+                        @if (ModifyModal)
+                        {
+                            <ModalTitle>Actualizar Producto</ModalTitle>
+                        }
+                        else
+                        {
+                            <ModalTitle>Agregar Producto</ModalTitle>
+                        }
+                        <CloseButton Clicked="@HideAddModal"/>
+                    </ModalHeader>
+                    <ModalBody>
 
-                                <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
+                        <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
 
-                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
-                                    <DataAnnotationsValidator/>
-                                    <ValidationSummary/>
-                                    <div class="form-group">
-                                        <label for="type">Tipo</label>
-                                        <select class="custom-select" id="type" @bind="ProductView.Type">
-                                            <option value="PRODUCT">Producto</option>
-                                            <option value="SERVICE">Servicio</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="code">Código</label>
-                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ProductView.Code"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ProductView.Name"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="ProductView.Description" row="4"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="minimalQuantity">Cantidad Mínima</label>
-                                        <input type="number" min="0" class="form-control" id="minimalQuantity" placeholder="Cantidad Mínima" @bind="ProductView.MinimalQuantity"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="salePrice">Precio Venta</label>
-                                        <input type="number" min="0" class="form-control" id="salePrice" placeholder="Precio Venta" @bind="ProductView.SalePrice"/>
-                                    </div>
-                                    @if (ModifyModal)
-                                    {
-                                        <label>Activo</label>
-                                        <div class="form-group">
-                                            <select class="form-control" @bind="ProductView.Active">
-                                                <option value="INACTIVE">No</option>
-                                                <option value="ACTIVE">Si</option>
-                                            </select>
-                                        </div>
-                                    }
-
-                                    <input type="submit" class="btn btn-primary" value="Guardar" />
-                                    <input type="button" class="btn btn-secondary" value="Cancelar" @onclick="HideAddModal"/>
-                                </EditForm>
-                            </div>
-                        </div>
-                    </div>
-                </div>    
-            }
+                        <Validations Mode="ValidationMode.Manual" Model="@ProductView" @ref="Validations">
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Tipo</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <Select @bind-SelectedValue="ProductView.Type" Class="custom-select" TValue="string">
+                                            <SelectItem Value="ProductTypeView.PRODUCT" TValue="ProductTypeView">Producto</SelectItem>
+                                            <SelectItem Value="ProductTypeView.SERVICE" TValue="ProductTypeView">Servicio</SelectItem>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>                                
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Código</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Código" @bind-Text="@ProductView.Code">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Nombre</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Nombre" @bind-Text="@ProductView.Name">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Descripción</FieldLabel>
+                                    <FieldBody ColumnSize=ColumnSize.Is10>
+                                        <MemoEdit Rows="4" @bind-Text="@ProductView.Description" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @if (ModifyModal)
+                            {
+                                <Validation>
+                                    <Field Horizontal>
+                                        <FieldLabel ColumnSize="ColumnSize.Is2">Activo</FieldLabel>
+                                        <FieldBody ColumnSize="ColumnSize.Is10">
+                                            <Select @bind-SelectedValue="ProductView.Active" Class="custom-select" TValue="string">
+                                                <SelectItem Value="ActiveTypeView.ACTIVE" TValue="ActiveTypeView">Si</SelectItem>
+                                                <SelectItem Value="ActiveTypeView.INACTIVE" TValue="ActiveTypeView">No</SelectItem>
+                                            </Select>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            }
+                        </Validations>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button Color="Color.Primary" Clicked="@SaveChanges">Guardar</Button>
+                        <Button Color="Color.Secondary" Clicked="@HideAddModal">Cancelar</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
         </div>
     </div>

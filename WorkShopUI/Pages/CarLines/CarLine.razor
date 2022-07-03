@@ -1,6 +1,7 @@
 @inherits CarLineBase
 
 @page "/car-brands/{CarBrandId}/lines"
+@using Domain.Views
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -8,144 +9,151 @@
             <h2>Líneas de Vehículos</h2>
 
             <div class="top-separator">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Búsqueda</h4>
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-10">
-                                    <h3>@CarBrandName</h3>                                    
-                                </div>
-                                <div class="col">
-                                    <NavLink class="nav-link" href="car-brands">
-                                        <span class="oi oi-arrow-thick-left" aria-hidden="true"></span> Regresar
-                                    </NavLink>                                    
-                                </div>
+
+                <Card>
+                    <CardBody>
+                        <CardTitle>Búsqueda</CardTitle>
+                        <div class="row">
+                            <div class="col-10">
+                                <h3>@CarBrandName</h3>                                    
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="searchName">Nombre</label>
-                                        <input type="text" class="form-control" id="searchName" placeholder="Nombre" @bind="SearchView.Name">
-                                    </div>
-                                </div>
-                                <div class="col-5">
-                                    <div class="form-group">
-                                        <label for="searchActive">Activo</label>
-                                        <select class="custom-select" id="searchActive" @bind="SearchView.Active">
-                                            <option value="1">Si</option>
-                                            <option value="0">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-5">
-                                    <div class="form-group">
-                                        <label for="top">Filas</label>
-                                        <select class="custom-select" id="top" @bind="SearchView.Size">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="500">500</option>
-                                        </select>
-                                    </div>                            
-                                </div>
-                                <div class="col">
-                                </div>
-                            </div>
-                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
-                            <input type="button" class="btn btn-primary" value="Agregar Línea" @onclick="ShowAddModal" />
-                        </fieldset>
-                    </div>
-                </div>
-
-            </div>
-
-            <ErrorMessage Display="@DisplayErrorMessage" Message="@ErrorMessage" />
-            
-            <div class="top-separator">
-
-                <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" />
-
-                <table class="table table-striped">
-                    <thead>
-                        <th>#</th>
-                        <th>Nombre</th>
-                        <th>Activo</th>
-                    </thead>
-                    <tbody>
-                        @foreach (var line in CarLines)
-                        {
-                            <tr>
-                                <td>
-                                    <div @onclick="() => GetCarLine(line.Id)" class="crud-icon"> 
-                                        <span class="oi oi-brush" aria-hidden="true"></span>
-                                    </div>
-                                </td>
-                                <td>@line.Name</td>
-                                <td><ActiveField Value="@line.Active"/></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (DisplayModal)
-            {
-                <div class="modal" tabindex="-1" role="dialog" style="display: block">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                @if (ModifyModal)
-                                {
-                                    <h5 class="modal-title">Actualizar Línea</h5>
-                                }
-                                else
-                                {
-                                    <h5 class="modal-title">Agregar Línea</h5>
-                                }
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-
-                                <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
-
-                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
-                                    <DataAnnotationsValidator/>
-                                    <ValidationSummary/>
-                                    <div class="form-group">
-                                        <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="CarLineView.Name"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="CarLineView.Description" row="4"></textarea>
-                                    </div>
-                                    @if (ModifyModal)
-                                    {
-                                        <label>Activo</label>
-                                        <div class="form-group">
-                                            <select class="form-control" @bind="CarLineView.Active">
-                                                <option value="INACTIVE">No</option>
-                                                <option value="ACTIVE">Si</option>
-                                            </select>
-                                        </div>
-                                    }
-
-                                    <input type="submit" class="btn btn-primary" value="Guardar" />
-                                    <input type="button" class="btn btn-secondary" value="Cancelar" @onclick="HideAddModal"/>
-                                </EditForm>
+                            <div class="col">
+                                <NavLink class="nav-link" href="car-brands">
+                                    <Icon Name="IconName.ArrowLeft" /> Regresar
+                                </NavLink>                                    
                             </div>
                         </div>
-                    </div>
-                </div>    
-            }
+                        <Fields>
+                            <Field>
+                                <FieldLabel>Nombre</FieldLabel>
+                                <TextEdit Placeholder="Nombre" @bind-Text="@SearchView.Name"/>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is5">
+                                <FieldLabel>Activo</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Active" TValue="int" Class="custom-select">
+                                    <SelectItem Value="1">Si</SelectItem>
+                                    <SelectItem Value="0">No</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is5">
+                                <FieldLabel>Filas</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Size" Class="custom-select" TValue="int">
+                                    <SelectItem Value="10">10</SelectItem>
+                                    <SelectItem Value="25">25</SelectItem>
+                                    <SelectItem Value="50">50</SelectItem>
+                                    <SelectItem Value="100">100</SelectItem>
+                                    <SelectItem Value="50">500</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Button Color="Color.Secondary" Clicked="@Search">Buscar</Button>
+                        <Button Color="Color.Primary" Clicked="@ShowAddModal">Agregar Línea</Button>
+                    </CardBody>                    
+                </Card>
 
+            </div>
+
+            <div class="top-separator">
+
+                <ErrorMessage Display="@DisplayErrorMessage" Message="@ErrorMessage" />
+
+                <DataGrid TItem="CarLineView"
+                        Data="@CarLines"
+                        ReadData="@OnReadData"
+                        TotalItems="@SearchResponse.Pageable.TotalElements"
+                        PageSize="@SearchView.Size"
+                        ShowPager="true"
+                        Striped="true"
+                        Responsive>
+                    
+                    <ChildContent>
+                        <DataGridCommandColumn EditCommandAllowed="true" />
+                        <DataGridColumn TItem="CarLineView" Field="Id" Caption="#">
+                            <DisplayTemplate>
+                                @{
+                                    var id = (context as CarLineView)?.Id;
+                                    <div @onclick="() => GetCarLine(id)" class="crud-icon"> 
+                                        <Icon Name="IconName.Edit" />
+                                    </div>
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="CarLineView" Field="Name" Caption="Nombre" />
+                        <DataGridColumn TItem="CarLineView" Field="Active" Caption="Activo">
+                            <DisplayTemplate>
+                                @{
+                                    var active = (context as CarLineView)?.Active;
+                                    <ActiveField Value="@active" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </ChildContent>
+                </DataGrid>
+
+            </div>
+
+            <Modal @bind-Visible="@DisplayModal">
+                <ModalContent Centered>
+                    <ModalHeader>
+                        @if (ModifyModal)
+                        {
+                            <ModalTitle>Actualizar Línea</ModalTitle>
+                        }
+                        else
+                        {
+                            <ModalTitle>Agregar Línea</ModalTitle>
+                        }
+                        <CloseButton Clicked="@HideAddModal"/>
+                    </ModalHeader>
+                    <ModalBody>
+
+                        <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
+
+                        <Validations Mode="ValidationMode.Manual" Model="@CarLineView" @ref="Validations">
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Nombre</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Nombre" @bind-Text="@CarLineView.Name">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Descripción</FieldLabel>
+                                    <FieldBody ColumnSize=ColumnSize.Is10>
+                                        <MemoEdit Rows="4" @bind-Text="@CarLineView.Description" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @if (ModifyModal)
+                            {
+                                <Validation>
+                                    <Field Horizontal>
+                                        <FieldLabel ColumnSize="ColumnSize.Is2">Activo</FieldLabel>
+                                        <FieldBody ColumnSize="ColumnSize.Is10">
+                                            <Select @bind-SelectedValue="CarLineView.Active" Class="custom-select" TValue="string">
+                                                <SelectItem Value="ActiveTypeView.ACTIVE" TValue="ActiveTypeView">Si</SelectItem>
+                                                <SelectItem Value="ActiveTypeView.INACTIVE" TValue="ActiveTypeView">No</SelectItem>
+                                            </Select>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            }
+                        </Validations>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button Color="Color.Primary" Clicked="@SaveChanges">Guardar</Button>
+                        <Button Color="Color.Secondary" Clicked="@HideAddModal">Cancelar</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </div>
     </div>
 </div>

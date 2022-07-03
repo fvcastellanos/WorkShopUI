@@ -1,6 +1,7 @@
 @inherits ContactBase
 
 @page "/contacts"
+@using Domain.Views
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -8,66 +9,52 @@
             <h2>Contactos</h2>
 
             <div class="top-separator">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Búsqueda</h4>
-                        <fieldset>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="searchName">Nombre</label>
-                                        <input type="text" class="form-control" id="searchName" placeholder="Nombre" @bind="SearchView.Name">
-                                    </div>
-                                </div>
-                                <div class="col-5">
-                                    <div class="form-group">
-                                        <label for="searchCode">Código</label>
-                                        <input type="text" class="form-control" id="searchCode" placeholder="Código" @bind="SearchView.Code">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="type">Tipo de Contacto</label>
-                                        <select class="custom-select" id="type" @bind="SearchView.Type">
-                                            <option value="C">Cliente</option>
-                                            <option value="P">Proveedor</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="searchActive">Activo</label>
-                                        <select class="custom-select" id="searchActive" @bind="SearchView.Active">
-                                            <option value="1">Si</option>
-                                            <option value="0">No</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label for="top">Filas</label>
-                                        <select class="custom-select" id="top" @bind="SearchView.Size">
-                                            <option value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="500">500</option>
-                                        </select>
-                                    </div>                            
-                                </div>
-                            </div>
-
-                            <input type="button" class="btn btn-secondary" value="Buscar" @onclick="Search" />
-                            <input type="button" class="btn btn-primary" value="Agregar Contacto" @onclick="ShowAddModal" />
-                        </fieldset>
-                    </div>
-                </div>
+                <Card>
+                    <CardBody>
+                        <CardTitle>Búsqueda</CardTitle>
+                        <Fields>
+                            <Field>
+                                <FieldLabel>Nombre</FieldLabel>
+                                <TextEdit Placeholder="Nombre" @bind-Text="@SearchView.Name"/>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is5">
+                                <FieldLabel>Código</FieldLabel>
+                                <TextEdit Placeholder="Código" @bind-Text="@SearchView.Code"/>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Tipo Contacto</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Type" TValue="string" Class="custom-select">
+                                    <SelectItem Value="@((string)"C")">Cliente</SelectItem>
+                                    <SelectItem Value="@((string)"P")">Proveedor</SelectItem>
+                                </Select>
+                            </Field>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Activo</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Active" TValue="int" Class="custom-select">
+                                    <SelectItem Value="1">Si</SelectItem>
+                                    <SelectItem Value="0">No</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Fields>
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Filas</FieldLabel>
+                                <Select @bind-SelectedValue="SearchView.Size" Class="custom-select" TValue="int">
+                                    <SelectItem Value="10">10</SelectItem>
+                                    <SelectItem Value="25">25</SelectItem>
+                                    <SelectItem Value="50">50</SelectItem>
+                                    <SelectItem Value="100">100</SelectItem>
+                                    <SelectItem Value="50">500</SelectItem>
+                                </Select>
+                            </Field>
+                        </Fields>
+                        <Button Color="Color.Secondary" Clicked="@Search">Buscar</Button>
+                        <Button Color="Color.Primary" Clicked="@ShowAddModal">Agregar Contacto</Button>
+                    </CardBody>                    
+                </Card>
 
             </div>
 
@@ -75,106 +62,158 @@
             
             <div class="top-separator">
 
-                <Paginator PageableView="@SearchResponse.Pageable" CurrentPage="@SearchView.Page" SetPageAction="@DisplayPage" />
+                <ErrorMessage Display="@DisplayErrorMessage" Message="@ErrorMessage" />
 
-                <table class="table table-striped">
-                    <thead>
-                        <th>#</th>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Activo</th>
-                    </thead>
-                    <tbody>
-                        @foreach (var contact in Contacts)
-                        {
-                            <tr>
-                                <td>
-                                    <div @onclick="() => GetContact(contact.Id)" class="crud-icon"> 
-                                        <span class="oi oi-brush" aria-hidden="true"></span>
+                <DataGrid TItem="ContactView"
+                        Data="@Contacts"
+                        ReadData="@OnReadData"
+                        TotalItems="@SearchResponse.Pageable.TotalElements"
+                        PageSize="@SearchView.Size"
+                        ShowPager="true"
+                        Striped="true"
+                        Responsive>
+                    
+                    <ChildContent>
+                        <DataGridCommandColumn EditCommandAllowed="true" />
+                        <DataGridColumn TItem="ContactView" Field="Id" Caption="#">
+                            <DisplayTemplate>
+                                @{
+                                    var id = (context as ContactView)?.Id;
+                                    <div @onclick="() => GetContact(id)" class="crud-icon"> 
+                                        <Icon Name="IconName.Edit" />
                                     </div>
-                                </td>
-                                <td>@contact.Code</td>
-                                <td>@contact.Name</td>
-                                <td><ContactTypeField Value="@contact.Type" /></td>
-                                <td><ActiveField Value="@contact.Active" /></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ContactView" Field="Code" Caption="Código" />
+                        <DataGridColumn TItem="ContactView" Field="Name" Caption="Nombre" />
+                        <DataGridColumn TItem="ContactView" Field="Active" Caption="Tipo">
+                            <DisplayTemplate>
+                                @{
+                                    var type = (context as ContactView)?.Type;
+                                    <ContactTypeField Value="@type" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ContactView" Field="Active" Caption="Activo">
+                            <DisplayTemplate>
+                                @{
+                                    var active = (context as ContactView)?.Active;
+                                    <ActiveField Value="@active" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </ChildContent>
+                </DataGrid>
             </div>
 
-            @if (DisplayModal)
-            {
-                <div class="modal" tabindex="-1" role="dialog" style="display: block">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                @if (ModifyModal)
-                                {
-                                    <h5 class="modal-title">Actualizar Contacto</h5>
-                                }
-                                else
-                                {
-                                    <h5 class="modal-title">Agregar Contacto</h5>
-                                }
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="HideAddModal">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
+            <Modal @bind-Visible="@DisplayModal">
+                <ModalContent Centered>
+                    <ModalHeader>
+                        @if (ModifyModal)
+                        {
+                            <ModalTitle>Actualizar Contacto</ModalTitle>
+                        }
+                        else
+                        {
+                            <ModalTitle>Agregar Contacto</ModalTitle>
+                        }
+                        <CloseButton Clicked="@HideAddModal"/>
+                    </ModalHeader>
+                    <ModalBody>
 
-                                <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
+                        <ErrorMessage Display="@HasModalError" Message="@ModalErrorMessage" />
 
-                                <EditForm EditContext="@EditContext" OnValidSubmit="@SaveChanges">
-                                    <DataAnnotationsValidator/>
-                                    <ValidationSummary/>
-                                    <div class="form-group">
-                                        <label for="type">Tipo</label>
-                                        <select class="custom-select" id="type" @bind="ContactView.Type">
-                                            <option value="CUSTOMER">Cliente</option>
-                                            <option value="PROVIDER">Proveedor</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="code">Código</label>
-                                        <input type="text" class="form-control" id="code" placeholder="Código" @bind="ContactView.Code"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Nombre</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Nombre" @bind="ContactView.Name"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Contacto</label>
-                                        <input type="text" class="form-control" id="name" placeholder="Contacto" @bind="ContactView.Contact"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="nit">NIT</label>
-                                        <input type="text" class="form-control" id="nit" placeholder="NIT" @bind="ContactView.TaxId"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Descripción</label>
-                                        <textarea class="form-control" id="description" @bind="ContactView.Description" row="4"></textarea>
-                                    </div>
-                                    @if (ModifyModal)
-                                    {
-                                        <label>Activo</label>
-                                        <div class="form-group">
-                                            <select class="form-control" @bind="ContactView.Active">
-                                                <option value="INACTIVE">No</option>
-                                                <option value="ACTIVE">Si</option>
-                                            </select>
-                                        </div>
-                                    }
-
-                                    <input type="submit" class="btn btn-primary" value="Guardar" />
-                                    <input type="button" class="btn btn-secondary" value="Cancelar" @onclick="HideAddModal"/>
-                                </EditForm>
-                            </div>
-                        </div>
-                    </div>
-                </div>    
-            }
+                        <Validations Mode="ValidationMode.Manual" Model="@ContactView" @ref="Validations">
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Tipo</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <Select @bind-SelectedValue="ContactView.Type" Class="custom-select" TValue="string">
+                                            <SelectItem Value="ContactTypeView.CUSTOMER" TValue="ContactTypeView">Cliente</SelectItem>
+                                            <SelectItem Value="ContactTypeView.PROVIDER" TValue="ContactTypeView">Proveedor</SelectItem>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>                                
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Código</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Código" @bind-Text="@ContactView.Code">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Nombre</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Nombre" @bind-Text="@ContactView.Name">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Contacto</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="Contacto" @bind-Text="@ContactView.Contact">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">NIT</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is10">
+                                        <TextEdit Placeholder="NIT" @bind-Text="@ContactView.TaxId">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is2">Descripción</FieldLabel>
+                                    <FieldBody ColumnSize=ColumnSize.Is10>
+                                        <MemoEdit Rows="4" @bind-Text="@ContactView.Description" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @if (ModifyModal)
+                            {
+                                <Validation>
+                                    <Field Horizontal>
+                                        <FieldLabel ColumnSize="ColumnSize.Is2">Activo</FieldLabel>
+                                        <FieldBody ColumnSize="ColumnSize.Is10">
+                                            <Select @bind-SelectedValue="ContactView.Active" Class="custom-select" TValue="string">
+                                                <SelectItem Value="ActiveTypeView.ACTIVE" TValue="ActiveTypeView">Si</SelectItem>
+                                                <SelectItem Value="ActiveTypeView.INACTIVE" TValue="ActiveTypeView">No</SelectItem>
+                                            </Select>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            }
+                        </Validations>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button Color="Color.Primary" Clicked="@SaveChanges">Guardar</Button>
+                        <Button Color="Color.Secondary" Clicked="@HideAddModal">Cancelar</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
 
         </div>
     </div>
