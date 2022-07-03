@@ -115,6 +115,7 @@ namespace WorkShopUI.Pages
         }
 
         // ------------------------------------------------------------------------------------------
+
         private void ShowEditModal(ContactView view)
         {
             ContactView = view;

@@ -87,7 +87,7 @@
                         </DataGridColumn>
                         <DataGridColumn TItem="ContactView" Field="Code" Caption="Código" />
                         <DataGridColumn TItem="ContactView" Field="Name" Caption="Nombre" />
-                        <DataGridColumn TItem="ContactView" Field="Active" Caption="Activo">
+                        <DataGridColumn TItem="ContactView" Field="Active" Caption="Tipo">
                             <DisplayTemplate>
                                 @{
                                     var type = (context as ContactView)?.Type;
