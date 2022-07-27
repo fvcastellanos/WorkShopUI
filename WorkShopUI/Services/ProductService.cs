@@ -21,12 +21,12 @@ namespace WorkShopUI.Services
         {
             try
             {
-                var searchResult = _productClient.Search(searchView.Active, searchView.Name, searchView.Code, searchView.Type,
+                var searchResult = _productClient.Search(searchView.Active, searchView.Text, searchView.Type,
                     searchView.Page, searchView.Size);
 
                 return new PagedView<ProductView>
                 {
-                    Pageable = ProductTransformer.BuildPageable(searchResult),
+                    Pageable = BaseTransformer.BuildPageable(searchResult),
                     Content = searchResult.Content
                                     .Select(ProductTransformer.ToView)
                                     .ToList()

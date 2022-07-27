@@ -15,18 +15,15 @@
                         <CardTitle>Búsqueda</CardTitle>
                         <Fields>
                             <Field>
-                                <FieldLabel>Nombre</FieldLabel>
-                                <TextEdit Placeholder="Nombre" @bind-Text="@SearchView.Name"/>
-                            </Field>
-                            <Field ColumnSize="ColumnSize.Is5">
-                                <FieldLabel>Código</FieldLabel>
-                                <TextEdit Placeholder="Código" @bind-Text="@SearchView.Code"/>
+                                <FieldLabel>Texto</FieldLabel>
+                                <TextEdit Placeholder="Texto de búsqueda" @bind-Text="@SearchView.Text"/>
                             </Field>
                         </Fields>
                         <Fields>
                             <Field ColumnSize="ColumnSize.Is6">
                                 <FieldLabel>Tipo de Producto</FieldLabel>
                                 <Select @bind-SelectedValue="SearchView.Type" TValue="string" Class="custom-select">
+                                    <SelectItem Value="@((string)"%")">Todos</SelectItem>
                                     <SelectItem Value="@((string)"P")">Producto</SelectItem>
                                     <SelectItem Value="@((string)"S")">Servicio</SelectItem>
                                 </Select>

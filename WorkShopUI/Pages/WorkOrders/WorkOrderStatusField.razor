@@ -1,0 +1,23 @@
+﻿@switch (Value)
+{
+    case "IN_PROGRESS":
+        <span>En Proceso</span>
+    break;
+    case "CANCELLED":
+        <span>Anulada</span>
+    break;
+    case "CLOSED":
+        <span>Cerrada</span>
+    break;
+    case "DELIVERED":
+        <span>Entregada</span>
+    break;
+    default:
+        <span>Desconocido</span>
+    break;
+}
+@code {
+
+    [Parameter]
+    public string Value { get; set; } = "";
+}

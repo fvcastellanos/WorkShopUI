@@ -1,3 +1,4 @@
+using LanguageExt;
 using WorkShopUI.Clients.Domain;
 
 namespace WorkShopUI.Clients
@@ -10,12 +11,20 @@ namespace WorkShopUI.Clients
         {
         }
 
-        public SearchResponse<WorkOrder> Search(string number, string plateNumber, string status, int page, int size)
+        public SearchResponse<WorkOrder> Search(string text, string status, int page, int size)
         {
-            var url = $"{ClientConstants.WorkOrderResource}?number={number}&plateNumber={plateNumber}&status={status}&page={page}&size={size}";
+            var url = $"{ClientConstants.WorkOrderResource}?text={text}&status={status}&page={page}&size={size}";
             var accessToken = GetAccessToken();
 
             return Search<WorkOrder>(accessToken, url);            
+        }
+
+        public Option<WorkOrder> FindById(string id)
+        {
+            var url = $"{ClientConstants.WorkOrderResource}/{id}";
+            var accessToken = GetAccessToken();
+
+            return FindById<WorkOrder>(accessToken, id);
         }
     }
 }

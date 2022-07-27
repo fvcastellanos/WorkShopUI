@@ -23,9 +23,8 @@ namespace WorkShopUI.Pages
             SearchView = new SearchView
             {
                 Active = 1,
-                Code = "",
-                Name = "",
-                Type = "P",
+                Text = "",
+                Type = "%",
                 Page = 0,
                 Size = 25
             };

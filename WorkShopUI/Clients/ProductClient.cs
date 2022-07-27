@@ -11,9 +11,9 @@ namespace WorkShopUI.Clients
         {
         }
 
-        public SearchResponse<Product> Search(int active, string name, string code, string type, int page, int size)
+        public SearchResponse<Product> Search(int active, string text, string type, int page, int size)
         {
-            var url = $"{ClientConstants.ProductResource}?active={active}&name={name}&&code={code}&type={type}&page={page}&size={size}";
+            var url = $"{ClientConstants.ProductResource}?active={active}&text={text}&type={type}&page={page}&size={size}";
             var accessToken = GetAccessToken();
 
             return Search<Product>(accessToken, url);

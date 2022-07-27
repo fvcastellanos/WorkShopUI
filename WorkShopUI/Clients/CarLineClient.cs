@@ -11,9 +11,17 @@ namespace WorkShopUI.Clients
         {
         }
 
+        public SearchResponse<CarLine> SearchLines(string text, int active, int page, int size)
+        {
+            var url = $"{ClientConstants.CarBrandResource}/lines/search?active={active}&text={text}&size={size}&page={page}";
+            var accessToken = GetAccessToken();
+
+            return Search<CarLine>(accessToken, url);
+        }
+        
         public SearchResponse<CarLine> Search(string brandId, int active, string name, int page, int size)
         {
-            var url = $"{String.Format(ClientConstants.CarLineResource, brandId)}?active={active}&name={name}&size={size}";
+            var url = $"{String.Format(ClientConstants.CarLineResource, brandId)}?active={active}&name={name}&size={size}&page={page}";
             var accessToken = GetAccessToken();
 
             return Search<CarLine>(accessToken, url);

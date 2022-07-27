@@ -107,18 +107,7 @@ namespace WorkShopUI.Pages
                 Search();
             }, DisplayModalError);
         }
-
-        protected void SaveChanges2()
-        {
-            if (Validations.ValidateAll().Result)
-            {
-                SaveChanges();
-                return;
-            }
-
-            return;
-        }
-
+        
         // ------------------------------------------------------------------------------------
 
         private void ShowEditModal(CarBrandView view)

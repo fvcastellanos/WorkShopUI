@@ -14,7 +14,13 @@
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7083;http://localhost:5298",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AUTH0_DOMAIN": "cavitos-net.auth0.com",
+        "AUTH0_CLIENT_ID": "SWSpgpbi3nauWmyntzEGpcCpfkBDwQFI",
+        "AUTH0_URL": "https://cavitos-net.auth0.com/",
+        "AUTH0_CLIENT_SECRET": "vjwpaiMBbch8WhEfFHmZnhTGI_8a5Z2uAoJPK5Fib4EosmuG47b5CrGo31U5FQff",
+        "AUTH0_AUDIENCE": "https://workshop.cavitos.net/v1/api"
+        
       }
     },
     "IIS Express": {

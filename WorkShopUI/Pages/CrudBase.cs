@@ -59,7 +59,10 @@ namespace WorkShopUI.Pages
 
         protected void SaveChanges()
         {
-            if (!Validations.ValidateAll().Result)
+            var valid = Validations.ValidateAll()
+                .Result;
+            
+            if (!valid)
             {
                 return;
             }

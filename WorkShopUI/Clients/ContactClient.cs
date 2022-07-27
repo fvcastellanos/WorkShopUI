@@ -13,9 +13,9 @@ namespace WorkShopUI.Clients
         {
         }
 
-        public SearchResponse<Contact> Search(int active, string name, string code, string type, int page, int size)
+        public SearchResponse<Contact> Search(int active, string text, string type, int page, int size)
         {
-            var url = $"{ClientConstants.ContactResource}?active={active}&name={name}&&code={code}&type={type}&page={page}&size={size}";
+            var url = $"{ClientConstants.ContactResource}?active={active}&text={text}&type={type}&page={page}&size={size}";
             var accessToken = GetAccessToken();
 
             return Search<Contact>(accessToken, url);            

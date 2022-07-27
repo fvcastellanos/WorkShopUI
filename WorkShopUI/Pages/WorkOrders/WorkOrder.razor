@@ -1,7 +1,7 @@
+@using WorkShopUI.Domain.Views
 @inherits WorkOrderBase
 
 @page "/work-orders"
-
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -51,6 +51,203 @@
                 </Card>
 
             </div>
+            
+            <ErrorMessage Display="@DisplayErrorMessage" Message="@ErrorMessage" />
+            
+            <div class="top-separator">
+
+                <DataGrid TItem="WorkOrderView"
+                        Data="@WorkOrders"
+                        ReadData="@OnReadData"
+                        TotalItems="@SearchResponse.Pageable.TotalElements"
+                        PageSize="@SearchView.Size"
+                        ShowPager="true"
+                        Striped="true"
+                        Responsive>
+                    
+                    <ChildContent>
+                        <DataGridCommandColumn EditCommandAllowed="true" />
+                        <DataGridColumn TItem="WorkOrderView" Field="Id" Caption="#">
+                            <DisplayTemplate>
+                                @{
+                                    var id = context?.Id;
+                                    <div @onclick="() => GetWorkOrder(id)" class="crud-icon"> 
+                                        <Icon Name="IconName.Edit" />
+                                    </div>
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="WorkOrderView" Field="Number" Caption="Número" />
+                        <DataGridColumn TItem="WorkOrderView" Field="OrderDate" Caption="Fecha" />
+                        <DataGridColumn TItem="WorkOrderView" Field="Status" Caption="Estado">
+                            <DisplayTemplate>
+                                @{
+                                    var status = context?.Status;
+                                    <WorkOrderStatusField Value="@status" />
+                                }
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </ChildContent>
+                </DataGrid>
+
+            </div>
+            
+            <Modal @bind-Visible="@DisplayModal">
+                <ModalContent Centered Scrollable="true">
+                    <ModalHeader>
+                        @if (ModifyModal)
+                        {
+                            <ModalTitle>Modificar Orden</ModalTitle>
+                        }
+                        else
+                        {
+                            <ModalTitle>Agregar Orden</ModalTitle>
+                        }
+                        <CloseButton Clicked="@HideAddModal"/>
+                    </ModalHeader>
+                    <ModalBody>
+
+                        <Validations Mode="ValidationMode.Manual" Model="@WorkOrderView" @ref="Validations">
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Número</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <TextEdit Placeholder="Número" @bind-Text="@WorkOrderView.Number">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Fecha</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <DateEdit TValue="string" @bind-Date="@WorkOrderView.OrderDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Contacto</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <Autocomplete TItem="ContactView"
+                                                      TValue="ContactView"
+                                                      Data="@Contacts"
+                                                      TextField="@(view => view.Name)"
+                                                      ValueField="@(view => view)"
+                                                      SearchChanged="@AutoCompleteContacts"
+                                                      @bind-SelectedValue = "@SelectedContact"
+                                                      @bind-SelectedText = "ContactTextSearch"
+                                                      Placeholder="Contacto"
+                                                      Debounce="true"
+                                                      DebounceInterval="300">
+                                            <NotFoundContent> No se encontró información para el texto: @context</NotFoundContent>
+                                        </Autocomplete>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Línea</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <Autocomplete TItem="CarLineView" 
+                                                      TValue="CarLineView"
+                                                      Data="@Carlines"
+                                                      TextField="@((view => view.Name))"
+                                                      ValueField="@((view) => view)"
+                                                      SearchChanged = "@AutoCompleteCarLines"
+                                                      @bind-SelectedValue = "@SelectedCarLine"
+                                                      @bind-SelectedText = "CarLineTextSearch"
+                                                      Placeholder="Línea del vehículo"
+                                                      Debounce="true"
+                                                      DebounceInterval="300">
+                                            <NotFoundContent> No se encontró información para el texto: @context</NotFoundContent>
+                                        </Autocomplete>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Placa</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <TextEdit Placeholder="Placa" @bind-Text="@WorkOrderView.PlateNumber">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Medida Odómetro</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <RadioGroup TValue="string" @bind-CheckedValue="@WorkOrderView.OdometerMeasurement">
+                                            <Radio Value="@("K")">Kilómetros</Radio>
+                                            <Radio Value="@("M")">Millas</Radio>
+                                        </RadioGroup>                                        
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Valor Odómetro</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <NumericEdit Placeholder="Valor Odómetro" TValue="double" @bind-Text="WorkOrderView.OdometerValue">
+                                            <Feedback>
+                                                <ValidationError/>
+                                            </Feedback>
+                                        </NumericEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Nivel Gasolina</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is9">
+                                        <Rating Color="Color.Primary" EmptyIcon="IconName.Circle" FullIcon="IconName.Circle" @bind-SelectedValue="@WorkOrderView.GasAmount" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                            </Validation>
+                            <Validation>
+                                <Field Horizontal>
+                                    <FieldLabel ColumnSize="ColumnSize.Is3">Notas</FieldLabel>
+                                    <FieldBody ColumnSize=ColumnSize.Is9>
+                                        <MemoEdit Rows="4" @bind-Text="@WorkOrderView.Notes" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @if (ModifyModal)
+                            {
+                                @* <Validation> *@
+                                @*     <Field Horizontal> *@
+                                @*         <FieldLabel ColumnSize="ColumnSize.Is2">Estado</FieldLabel> *@
+                                @*         <FieldBody ColumnSize="ColumnSize.Is10"> *@
+                                @*             <Select @bind-SelectedValue="WorkOrderView.Status" Class="custom-select" TValue="string"> *@
+                                @*                 <SelectItem Value="ActiveTypeView.ACTIVE" TValue="ActiveTypeView">Si</SelectItem> *@
+                                @*                 <SelectItem Value="ActiveTypeView.INACTIVE" TValue="ActiveTypeView">No</SelectItem> *@
+                                @*             </Select> *@
+                                @*         </FieldBody> *@
+                                @*     </Field> *@
+                                @* </Validation> *@
+                            }
+                        </Validations>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button Color="Color.Primary" Clicked="@SaveChanges">Guardar</Button>
+                        <Button Color="Color.Secondary" Clicked="@HideAddModal">Cancelar</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            
         </div>
     </div>
 </div>

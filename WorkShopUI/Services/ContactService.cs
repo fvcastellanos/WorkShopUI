@@ -20,7 +20,7 @@ namespace WorkShopUI.Services
         public Either<string, PagedView<ContactView>> Search(ContactSearchView searchView) 
         {
             try {                
-                var searchResult = _contactClient.Search(searchView.Active, searchView.Name, searchView.Code, 
+                var searchResult = _contactClient.Search(searchView.Active, searchView.Text, 
                     searchView.Type, searchView.Page, searchView.Size);
 
                 return new PagedView<ContactView>

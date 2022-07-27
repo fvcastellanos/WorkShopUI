@@ -29,8 +29,8 @@ namespace WorkShopUI.Pages
                 Page = 0,
                 Size = 25,
                 Active = 1,
-                Name = "",
-                Type = "C"
+                Text = "",
+                Type = "%"
             };
 
             ContactView = new ContactView();

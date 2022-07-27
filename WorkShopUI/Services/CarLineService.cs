@@ -38,6 +38,28 @@ namespace WorkShopUI.Services
             }
         }
 
+        public Either<string, PagedView<CarLineView>> SearchLines(SearchView searchView)
+        {
+            try
+            {
+                var result = _carLineClient.SearchLines(searchView.Text, searchView.Active,
+                    searchView.Page, searchView.Size);
+                
+                return new PagedView<CarLineView>
+                {
+                    Pageable = CarLineTransformer.BuildPageable(result),
+                    Content = result.Content
+                        .Select(CarLineTransformer.ToView)
+                        .ToList()
+                };
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Unable to search for car lines");
+                return "No es posible realizar la búsqueda de lineas de vehículos";
+            }
+        }
+
         public Either<string, CarLineView> Add(string brandId, CarLineView carLineView)
         {
             try
