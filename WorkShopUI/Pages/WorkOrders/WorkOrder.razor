@@ -107,7 +107,9 @@
                     </ModalHeader>
                     <ModalBody>
 
-                        <Validations Mode="ValidationMode.Manual" Model="@WorkOrderView" @ref="Validations">
+                        <AlertError Display="@HasModalError" Message="@ModalErrorMessage"/>
+
+                        <Validations Mode="ValidationMode.Manual" EditContext="@EditContext" @ref="Validations">
                             <Validation>
                                 <Field Horizontal>
                                     <FieldLabel ColumnSize="ColumnSize.Is3">Número</FieldLabel>
@@ -124,11 +126,10 @@
                                 <Field Horizontal>
                                     <FieldLabel ColumnSize="ColumnSize.Is3">Fecha</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is9">
-                                        <DateEdit TValue="string" @bind-Date="@WorkOrderView.OrderDate">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </DateEdit>
+                                        <DateEdit TValue="DateTime" 
+                                            Placeholder="Fecha de la orden" 
+                                            InputMode="DateInputMode.Date" 
+                                            Date="@OrderDate" />
                                     </FieldBody>
                                 </Field>
                             </Validation>
@@ -145,6 +146,7 @@
                                                       @bind-SelectedValue = "@SelectedContact"
                                                       @bind-SelectedText = "ContactTextSearch"
                                                       Placeholder="Contacto"
+                                                      Filter="AutocompleteFilter.Contains"
                                                       Debounce="true"
                                                       DebounceInterval="300">
                                             <NotFoundContent> No se encontró información para el texto: @context</NotFoundContent>
@@ -159,14 +161,15 @@
                                         <Autocomplete TItem="CarLineView" 
                                                       TValue="CarLineView"
                                                       Data="@Carlines"
-                                                      TextField="@((view => view.Name))"
+                                                      TextField="@((view) => view.Name)"
                                                       ValueField="@((view) => view)"
                                                       SearchChanged = "@AutoCompleteCarLines"
                                                       @bind-SelectedValue = "@SelectedCarLine"
                                                       @bind-SelectedText = "CarLineTextSearch"
                                                       Placeholder="Línea del vehículo"
+                                                      Filter="AutocompleteFilter.Contains"
                                                       Debounce="true"
-                                                      DebounceInterval="300">
+                                                      DebounceInterval="500">
                                             <NotFoundContent> No se encontró información para el texto: @context</NotFoundContent>
                                         </Autocomplete>
                                     </FieldBody>

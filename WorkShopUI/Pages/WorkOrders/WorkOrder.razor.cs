@@ -32,6 +32,8 @@ namespace WorkShopUI.Pages
         protected ContactView SelectedContact;
 
         protected WorkOrderView WorkOrderView;
+
+        protected DateTime OrderDate;
         
         protected override void OnInitialized()
         {
@@ -58,6 +60,8 @@ namespace WorkShopUI.Pages
                 OdometerMeasurement = "K",
                 Status = "IN_PROGRESS",
             };
+
+            OrderDate = DateTime.Now;
 
             Carlines = new List<CarLineView>();
             CarLineTextSearch = "";
@@ -137,6 +141,29 @@ namespace WorkShopUI.Pages
 
             var result = ContactService.Search(searchView);
             result.Match(right => Contacts = right.Content, DisplayModalError);
+        }
+
+        protected void SaveChanges()
+        {
+            HideModalError();
+
+            if (SelectedCarLine == null) 
+            {
+                DisplayModalError("Debe seleccionar una línea de vehículo");
+                return;
+            }
+
+            if (SelectedContact == null)
+            {
+                DisplayModalError("Debe seleccionar un Contacto");
+                return;
+            }
+
+            WorkOrderView.CarLineView = SelectedCarLine;
+            WorkOrderView.ContactView = SelectedContact;
+            WorkOrderView.OrderDate = OrderDate.ToShortDateString();
+
+            base.SaveChanges();
         }
 
         private void ShowEditModal(WorkOrderView workOrderView)
